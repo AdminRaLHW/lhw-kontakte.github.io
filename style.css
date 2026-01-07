@@ -1,0 +1,129 @@
+:root {
+    --accent-it: #1976d2;
+    --bg-it: #e3f2fd;
+    --accent-marketing: #7b1fa2;
+    --bg-marketing: #f3e5f5;
+    --accent-default: #455a64;
+    --bg-default: #eceff1;
+}
+
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    padding: 20px; 
+    color: #333; 
+}
+
+.no-print { 
+    margin-bottom: 20px; 
+    display: flex; 
+    gap: 10px; 
+}
+
+input { 
+    padding: 12px; 
+    border: 1px solid #ddd; 
+    border-radius: 4px; 
+    width: 300px; 
+}
+
+.print-btn {
+    padding: 10px; 
+    cursor: pointer;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#directory { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 20px; 
+}
+
+.section-header { 
+    grid-column: 1 / -1; 
+    border-bottom: 2px solid #333; 
+    margin-top: 40px; 
+}
+
+.contact-card { 
+    padding: 15px; 
+    border-radius: 8px; 
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    border-left: 6px solid var(--accent-default);
+    background: var(--bg-default);
+}
+
+/* Neue Klasse für die Jobbeschreibung */
+.job-position {
+    font-weight: 600;
+    color: #555;
+    margin: -10px 0 10px 0;
+    font-size: 0.9rem;
+}
+
+/* Dynamische Farben basierend auf Klassen */
+.cat-it { background: var(--bg-it); border-left-color: var(--accent-it); }
+.cat-marketing { background: var(--bg-marketing); border-left-color: var(--accent-marketing); }
+
+.dept-badge { 
+    display: none; /* Nur für den Druck */
+    font-size: 0.7rem; 
+    font-weight: bold; 
+    padding: 2px 6px; 
+    border-radius: 3px; 
+    color: white; 
+    text-transform: uppercase;
+}
+
+@media print {
+    .no-print { display: none !important; }
+    
+    .section-header { 
+        break-before: page; 
+        margin-top: 20px; 
+        margin-bottom: 10px;
+    }
+
+    #directory {
+        /* Wir nutzen Grid für den Druck, um die volle Breite zu nutzen */
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr); /* Genau 2 Spalten */
+        gap: 15px;
+        width: 100%;
+    }
+
+    .contact-card { 
+        background: white !important; 
+        border: 1px solid #ccc !important; 
+        border-left: 5px solid #333 !important; 
+        
+        /* Verhindert, dass eine Karte mitten im Text auf die nächste Seite bricht */
+        break-inside: avoid; 
+        
+        /* Damit die Karte innerhalb des Grids die volle Breite der Spalte nutzt */
+        width: auto !important; 
+        margin: 0 !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .dept-badge { 
+        display: inline-block; 
+        margin-bottom: 8px;
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact;
+    }
+
+    .cat-it .dept-badge { background-color: var(--accent-it) !important; }
+    .cat-marketing { border-left-color: var(--accent-marketing) !important; }
+    .cat-marketing .dept-badge { background-color: var(--accent-marketing) !important; }
+    .cat-it { border-left-color: var(--accent-it) !important; }
+
+    @page { 
+        size: A4 portrait; 
+        margin: 1.5cm; 
+    }
+}
