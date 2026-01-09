@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telefonverzeichnis | Phone Directory</title>
+    <title>Telefonverzeichnis | Professional Directory</title>
     
-    <!-- External Library for CSV Parsing: PapaParse -->
+    <!-- External Library for CSV Parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <style>
-        /* --- CSS VARIABLES & THEMING --- */
+        /* --- CSS VARIABLES --- */
         :root {
             --accent-it: #1976d2;
             --bg-it: #e3f2fd;
@@ -19,85 +19,132 @@
             --bg-default: #eceff1;
             --accent-01: #1976d2;
             --bg-01: #e3f2fd;
+            --card-min-width: 300px; /* Reduced for better mobile compatibility */
         }
 
-        /* --- BASIC STYLING --- */
+        /* --- RESET & BASIC STYLING --- */
+        * { box-sizing: border-box; }
+        
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
             padding: 20px; 
+            margin: 0;
             color: #333; 
-            background-color: #f9f9f9;
+            background-color: #f4f7f9;
+            line-height: 1.5;
         }
 
-        /* UI elements to hide during print */
+        /* --- UI ELEMENTS --- */
         .no-print { 
-            margin-bottom: 20px; 
+            margin-bottom: 30px; 
             display: flex; 
-            gap: 10px; 
+            gap: 12px; 
+            flex-wrap: wrap; /* Allows wrapping on small screens */
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         input { 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            width: 300px; 
+            padding: 12px 16px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            flex-grow: 1; /* Search bar takes available space */
+            min-width: 250px;
             font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
         }
 
+        input:focus { border-color: var(--accent-it); }
+
         .print-btn {
-            padding: 10px 20px; 
+            padding: 10px 24px; 
             cursor: pointer;
             background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            transition: background 0.2s;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
         }
 
         .print-btn:hover {
-            background-color: #f0f0f0;
+            background-color: #f8f9fa;
+            border-color: #ccc;
         }
 
-        /* --- GRID LAYOUT --- */
-        #directory { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
-            gap: 20px; 
+        /* --- STRUCTURE: SECTIONS & GRIDS --- */
+        .dept-section {
+            margin-bottom: 40px;
+            /* Section is visible by default */
         }
 
-        /* Header for Department sections */
         .section-header { 
-            grid-column: 1 / -1; 
-            border-bottom: 2px solid #333; 
-            margin-top: 40px;
-            padding-bottom: 5px;
+            border-bottom: 3px solid #333; 
+            margin-bottom: 20px;
+            padding-bottom: 8px;
             text-transform: uppercase;
+            font-size: 1.4rem;
             letter-spacing: 1px;
+            color: #222;
+        }
+
+        /* The grid container for cards within a section */
+        .cards-grid { 
+            display: grid; 
+            /* Responsive grid: fits as many columns as possible, down to 300px */
+            grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); 
+            gap: 20px; 
         }
 
         /* --- CONTACT CARDS --- */
         .contact-card { 
-            padding: 15px; 
-            border-radius: 8px; 
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            padding: 18px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
             border-left: 6px solid var(--accent-default);
             background: var(--bg-default);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
         }
 
         .contact-card h3 {
-            margin-top: 0;
-            margin-bottom: 5px;
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+            /* Prevents name overflow */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
 
         .job-position {
             font-weight: 600;
-            color: #555;
-            margin: -5px 0 10px 0;
+            color: #666;
+            margin: 0 0 15px 0;
+            font-size: 0.95rem;
+        }
+
+        /* Data Alignment & Overflow Prevention */
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
             font-size: 0.9rem;
+        }
+
+        .icon-container {
+            flex-shrink: 0;
+            width: 18px;
+            color: #555;
+        }
+
+        .value-container {
+            /* Crucial for long emails on small screens */
+            overflow-wrap: break-word;
+            word-break: break-all; 
+            color: #444;
         }
 
         /* Dynamic Category Colors */
@@ -105,98 +152,85 @@
         .cat-01 { background: var(--bg-01); border-left-color: var(--accent-01); }
         .cat-marketing { background: var(--bg-marketing); border-left-color: var(--accent-marketing); }
 
-        /* Icon & Data Alignment */
-        .contact-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
-
-        .icon-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 16px;
-            flex-shrink: 0;
-        }
-
         /* --- PRINT STYLES --- */
         @media print {
             .no-print { display: none !important; }
-            
             body { padding: 0; background: white; }
-
-            .section-header { 
-                break-before: page; 
-                margin-top: 20px; 
-                margin-bottom: 10px;
-            }
-
-            #directory {
+            .dept-section { margin-bottom: 30px; break-inside: auto; }
+            .section-header { break-after: avoid; margin-top: 10px; }
+            
+            .cards-grid {
                 display: grid !important;
-                grid-template-columns: repeat(2, 1fr); /* Force 2 columns for A4 */
+                grid-template-columns: repeat(2, 1fr) !important; /* Fixed 2 columns for A4 */
                 gap: 15px;
-                width: 100%;
             }
 
             .contact-card { 
                 background: white !important; 
-                border: 1px solid #ccc !important; 
+                border: 1px solid #ddd !important; 
                 border-left: 5px solid #333 !important; 
                 break-inside: avoid; 
-                width: auto !important; 
-                margin: 0 !important;
                 box-shadow: none;
             }
 
-            /* Maintain specific category colors during print if possible */
-            .cat-marketing { border-left-color: var(--accent-marketing) !important; }
-            .cat-it { border-left-color: var(--accent-it) !important; }
-            .cat-01 { border-left-color: var(--accent-01) !important; }
+            @page { size: A4 portrait; margin: 1.5cm; }
+        }
 
-            @page { 
-                size: A4 portrait; 
-                margin: 1.5cm; 
-            }
+        /* --- SMALL MOBILE OPTIMIZATIONS --- */
+        @media (max-width: 400px) {
+            body { padding: 10px; }
+            .section-header { font-size: 1.2rem; }
+            .cards-grid { grid-template-columns: 1fr; } /* Force single column */
+            .no-print { padding: 15px; }
         }
     </style>
 </head>
 <body>
 
-<!-- UI Header: Search and Print -->
 <div class="no-print">
-    <input type="text" id="search" onkeyup="filter()" placeholder="Name, Abteilung oder Position suchen...">
+    <input type="text" id="search" onkeyup="filter()" placeholder="Suche nach Name, Abteilung, Position oder E-Mail...">
     <button onclick="window.print()" class="print-btn">Drucken / PDF</button>
 </div>
 
-<!-- Container for generated cards -->
+<!-- Root directory container -->
 <div id="directory"></div>
 
 <script>
-    /* --- CONSTANTS: SVG Icons --- */
-    const ICON_PHONE = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-accent"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;
-    const ICON_MOBILE = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-accent"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
-    const ICON_MAIL = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-accent"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+    /* --- ICONS (SVG) --- */
+    const ICON_PHONE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;
+    const ICON_MOBILE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
+    const ICON_MAIL = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
 
     /**
-     * Filters the contact cards based on search input
+     * ADVANCED FILTER LOGIC
+     * Hides cards and entire sections if they become empty
      */
     function filter() {
-        let val = document.getElementById('search').value.toLowerCase();
-        document.querySelectorAll('.contact-card').forEach(card => {
-            // Check if card text content matches search term
-            card.style.display = card.innerText.toLowerCase().includes(val) ? "" : "none";
+        const query = document.getElementById('search').value.toLowerCase();
+        const sections = document.querySelectorAll('.dept-section');
+
+        sections.forEach(section => {
+            const cards = section.querySelectorAll('.contact-card');
+            let hasVisibleCards = false;
+
+            cards.forEach(card => {
+                // Search in all text within the card
+                const content = card.textContent.toLowerCase();
+                if (content.includes(query)) {
+                    card.style.display = ""; // CSS grid default
+                    hasVisibleCards = true;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            // Hide the entire section (including header) if no cards match
+            section.style.display = hasVisibleCards ? "" : "none";
         });
-        
-        // Hide/Show section headers based on visible cards
-        // (Optional enhancement: hide headers if no cards are visible below them)
     }
 
     /**
-     * Initialize CSV Parsing
-     * Note: Make sure "data/kontakte.csv" exists relative to this file
-     * or replace with a public URL.
+     * DATA INITIALIZATION
      */
     Papa.parse("data/kontakte.csv", {
         download: true,
@@ -205,68 +239,76 @@
         complete: function(results) {
             renderDirectory(results.data);
         },
-        error: function(err) {
-            console.error("Error loading CSV:", err);
-            // Fallback instruction for user
-            document.getElementById('directory').innerHTML = `<p style="color:red">CSV Datei nicht gefunden. Bitte stelle sicher, dass 'data/kontakte.csv' existiert.</p>`;
+        error: function() {
+            document.getElementById('directory').innerHTML = "Fehler beim Laden der Kontakte.";
         }
     });
 
     /**
-     * Renders the data into the HTML grid
+     * RENDERING ENGINE
+     * Creates: .dept-section -> .section-header + .cards-grid -> .contact-card
      */
     function renderDirectory(data) {
-        const container = document.getElementById('directory');
-        container.innerHTML = ""; // Clear loader
-        let lastDept = "";
+        const directory = document.getElementById('directory');
+        directory.innerHTML = "";
 
-        // 1. Filter out entries missing essential data
+        // 1. Clean and sort data
         const validData = data.filter(p => p.Abteilung && p.Name);
+        validData.sort((a, b) => a.Abteilung.localeCompare(b.Abteilung));
 
-        // 2. Sort data by Department
-        validData.sort((a, b) => (a.Abteilung || "").localeCompare(b.Abteilung || ""));
+        // 2. Group data by department
+        const grouped = validData.reduce((acc, person) => {
+            if (!acc[person.Abteilung]) acc[person.Abteilung] = [];
+            acc[person.Abteilung].push(person);
+            return acc;
+        }, {});
 
-        // 3. Build DOM elements
-        validData.forEach(p => {
-            // Create Section Header if Department changes
-            if(p.Abteilung !== lastDept) {
-                lastDept = p.Abteilung;
-                let h = document.createElement('h2'); 
-                h.className = "section-header"; 
-                h.innerText = lastDept;
-                container.appendChild(h);
-            }
+        // 3. Create DOM elements for each department
+        for (const dept in grouped) {
+            // Container for the whole section
+            const section = document.createElement('section');
+            section.className = "dept-section";
 
-            // Determine color class from CSV 'ColorCode' column
-            let deptClass = p.ColorCode ? p.ColorCode.toLowerCase().replace(/\s/g, '') : 'default';
-            let cls = "cat-" + deptClass;
+            // Header for the department
+            const header = document.createElement('h2');
+            header.className = "section-header";
+            header.innerText = dept;
+            section.appendChild(header);
 
-            let div = document.createElement('div');
-            div.className = `contact-card ${cls}`;
-            
-            // Helper function to only show rows with content
-            const renderField = (icon, value) => {
-                if (!value || value.trim() === "" || value === "-") return "";
-                return `
-                    <div class="contact-row">
-                        <span class="icon-container">${icon}</span>
-                        <span class="value-container">${value}</span>
-                    </div>`;
-            };
+            // Grid container for the cards
+            const grid = document.createElement('div');
+            grid.className = "cards-grid";
 
-            // Construct Card HTML
-            div.innerHTML = `
-                <h3>${p.Name}</h3>
-                ${p.Position ? `<p class="job-position">${p.Position}</p>` : ''}
-                <div class="contact-info">
-                    ${renderField(ICON_PHONE, p.Telefon)}
-                    ${renderField(ICON_MOBILE, p.Mobiltelefon)}
-                    ${renderField(ICON_MAIL, p.Email)}
-                </div>
-            `;
-            
-            container.appendChild(div);
-        });
+            // Create cards for each person in this department
+            grouped[dept].forEach(p => {
+                const card = document.createElement('div');
+                const colorCls = p.ColorCode ? `cat-${p.ColorCode.toLowerCase().trim()}` : '';
+                card.className = `contact-card ${colorCls}`;
+                
+                const renderField = (icon, val) => {
+                    if (!val || val.trim() === "" || val === "-") return "";
+                    return `
+                        <div class="contact-row">
+                            <span class="icon-container">${icon}</span>
+                            <span class="value-container">${val}</span>
+                        </div>`;
+                };
+
+                card.innerHTML = `
+                    <h3>${p.Name}</h3>
+                    ${p.Position ? `<p class="job-position">${p.Position}</p>` : ''}
+                    <div class="card-body">
+                        ${renderField(ICON_PHONE, p.Telefon)}
+                        ${renderField(ICON_MOBILE, p.Mobiltelefon)}
+                        ${renderField(ICON_MAIL, p.Email)}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            section.appendChild(grid);
+            directory.appendChild(section);
+        }
     }
 </script>
 </body>
