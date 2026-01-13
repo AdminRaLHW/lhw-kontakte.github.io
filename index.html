@@ -3,44 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Directory | Advanced Color Management</title>
+    <title>Kontakte | Lebenshilfswerk Waren</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <style>
-        /* --- 1. HEX COLOR DEFINITIONS --- */
         :root {
-            /* GLOBAL SETTINGS */
-            --bg-opacity: 0.1;      /* Transparency for card backgrounds */
+            --bg-opacity: 0.1;
             --card-min-width: 350px;
-            
-            /* UI COLORS (LIGHT) */
             --bg-body: #f4f7f9;
             --bg-panel: #ffffff;
             --text-main: #2c3e50;
             --text-muted: #64748b;
             --border-ui: #e2e8f0;
 
-            /* CATEGORY HEX CODES - Defined here for easy editing */
-            --hex-01: #81c784; /* 01 Administration (Light Green) */
-            --hex-02: #81c784; /* 02 Management (Light Green) */
-            --hex-03: #ffa726; /* 03 Service Tours (Orange) */
-            --hex-04: #ffa726; /* 04 Tech (Orange) */
-            --hex-05: #4fc3f7; /* 05 Vocational Training (Light Blue) */
-            --hex-06: #1976d2; /* 06 Social Service (Medium Blue) */
-            --hex-07: #1a237e; /* 07 Service (Dark Blue) */
-            --hex-08: #00897b; /* 08 Hotel (Turquoise) */
-            --hex-09: #2e7d32; /* 09 Greenery (Dark Green) */
-            --hex-10: #8e24aa; /* 10 Mobile Services (Purple) */
-            --hex-11: #c2185b; /* 11 Housing (Magenta) */
-            --hex-12: #fbc02d; /* 12 Kindergartens (Yellow) */
-            --hex-13: #d84315; /* 13 Day Groups (Terracotta) */
-            
-            /* Default accent if no code is found */
+            /* Category Colors */
+            --hex-01: #81c784; --hex-02: #81c784; --hex-03: #ffa726;
+            --hex-04: #ffa726; --hex-05: #4fc3f7; --hex-06: #1976d2;
+            --hex-07: #1a237e; --hex-08: #00897b; --hex-09: #2e7d32;
+            --hex-10: #8e24aa; --hex-11: #c2185b; --hex-12: #fbc02d;
+            --hex-13: #d84315;
             --accent: #455a64; 
         }
 
-        /* --- 2. DARK MODE OVERRIDES --- */
         [data-theme="dark"] {
             --bg-body: #0f172a;
             --bg-panel: #1e293b;
@@ -50,7 +35,6 @@
             --bg-opacity: 0.15;
         }
 
-        /* --- 3. BASE STYLING --- */
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
@@ -58,64 +42,96 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* UI Panel (Search & Buttons) */
+        /* Responsive Header Navigation */
         .no-print {
-            display: flex; gap: 15px; align-items: center; padding: 15px 25px;
-            background: var(--bg-panel); border-radius: 12px; margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--bg-panel);
+            border-radius: 12px;
+            margin-bottom: 30px;
             border: 1px solid var(--border-ui);
         }
 
-        .search-wrapper { flex-grow: 1; }
+        .logo-link {
+            display: flex;
+            align-items: center;
+            transition: opacity 0.2s;
+        }
+        .logo-link:hover { opacity: 0.8; }
+        .logo-link:focus { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+        .logo { height: 45px; width: auto; }
+
+        .search-wrapper {
+            flex: 1 1 300px;
+        }
+        
+        /* Visually Hidden Label for A11y */
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); border: 0;
+        }
+
         input {
-            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-ui);
-            background: var(--bg-body); color: var(--text-main); outline: none;
+            width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-ui);
+            background: var(--bg-body); color: var(--text-main); font-size: 1rem;
+        }
+        input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
+        /* Button Group Logic */
+        .action-controls {
+            display: flex;
+            gap: 10px;
+            flex: 1 1 auto; /* Grow when wrapped */
+            justify-content: flex-end;
         }
 
         .theme-btn, .print-btn {
-            display: flex; align-items: center; gap: 8px; padding: 10px 18px;
-            border-radius: 8px; border: 1px solid var(--border-ui); background: var(--bg-panel);
-            color: var(--text-main); cursor: pointer; font-weight: 600;
+            flex: 1; /* Buttons share space equally within group */
+            min-width: 140px;
+            display: flex; align-items: center; justify-content: center; gap: 8px; 
+            padding: 10px 18px; border-radius: 8px; border: 1px solid var(--border-ui); 
+            background: var(--bg-panel); color: var(--text-main); cursor: pointer; 
+            font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
         }
 
-        /* --- 4. THE DIRECTORY GRID --- */
+        .theme-btn:hover, .print-btn:hover { background: var(--bg-body); border-color: var(--text-muted); }
+        .theme-btn:focus, .print-btn:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+        .btn-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        /* Grid & Cards */
         .dept-section { margin-bottom: 40px; }
         .section-header { 
-            font-size: 1.2rem; text-transform: uppercase; margin-bottom: 20px; 
-            padding-bottom: 5px; border-bottom: 2px solid var(--border-ui);
+            font-size: 1.25rem; text-transform: uppercase; margin-bottom: 20px; 
+            padding-bottom: 8px; border-bottom: 2px solid var(--border-ui);
+            letter-spacing: 0.05em;
         }
         .cards-grid { 
             display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); gap: 20px; 
         }
 
-        /* --- 5. THE DYNAMIC CONTACT CARD --- */
         .contact-card {
-            /* This is the heart of the color processing: 
-               The background color takes the accent hex and applies the global opacity */
             background-color: hsl(from var(--accent) h s l / var(--bg-opacity));
             border-left: 6px solid var(--accent);
-            
             padding: 20px; border-radius: 10px; display: flex; flex-direction: column;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s ease;
         }
         .contact-card:hover { transform: translateY(-3px); }
-
         .contact-card h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
         .job-position { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; }
-
         .contact-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .icon-container { width: 18px; height: 18px; flex-shrink: 0; color: var(--accent); }
         
-        /* Icon uses accent color */
-        .icon-container { width: 18px; flex-shrink: 0; color: var(--accent); }
-
-        /* Links: Normal text color, Hover uses accent color */
         .contact-link {
-            text-decoration: none !important; color: inherit; font-size: 0.9rem;
+            text-decoration: none; color: inherit; font-size: 0.95rem;
             transition: color 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .contact-link:hover { color: var(--accent); }
+        .contact-link:hover, .contact-link:focus { color: var(--accent); text-decoration: underline; outline: none; }
 
-        /* --- 6. CATEGORY CLASS MAPPING --- */
-        /* These classes are applied via JavaScript based on the CSV "ColorCode" column */
+        /* Categories */
         .cat-01 { --accent: var(--hex-01); } .cat-02 { --accent: var(--hex-02); }
         .cat-03 { --accent: var(--hex-03); } .cat-04 { --accent: var(--hex-04); }
         .cat-05 { --accent: var(--hex-05); } .cat-06 { --accent: var(--hex-06); }
@@ -124,49 +140,61 @@
         .cat-11 { --accent: var(--hex-11); } .cat-12 { --accent: var(--hex-12); }
         .cat-13 { --accent: var(--hex-13); }
 
-        /* --- 7. PRINT STYLES --- */
         @media print {
             .no-print { display: none !important; }
-            body { background: white !important; }
+            body { background: white !important; padding: 0; }
             .contact-card {
                 background: white !important; border: 1px solid #ccc !important;
-                border-left: 10px solid var(--accent) !important; /* Force visible accent border */
-                break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                border-left: 10px solid var(--accent) !important;
+                break-inside: avoid; -webkit-print-color-adjust: exact;
             }
-            .contact-link { color: black !important; }
-            @page { margin: 1cm; }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .no-print { padding: 15px; }
+            .search-wrapper { flex-basis: 100%; }
+            .action-controls { flex-basis: 100%; }
         }
     </style>
 </head>
 <body>
 
-<!-- Header / Search -->
-<div class="no-print" role="search">
+<header class="no-print">
+    <!-- (1) Logo mit Link zur Hauptseite -->
+    <a href="https://lebenshilfswerk-waren.de" class="logo-link" aria-label="Zur Startseite des Lebenshilfswerks Waren">
+        <img src="img/LHW Logo Trans.svg" alt="LHW Logo" class="logo">
+    </a>
+
+    <!-- Suchfeld mit Label für A11y -->
     <div class="search-wrapper">
-        <input type="text" id="search" onkeyup="handleSearch()" placeholder="Suche nach Name, Abteilung, Position...">
+        <label for="search" class="sr-only">Kontakte suchen</label>
+        <input type="text" id="search" onkeyup="handleSearch()" placeholder="Name, Abteilung oder Position suchen..." aria-controls="directory">
     </div>
 
-    <!-- Theme Switcher with German Labels -->
-    <button class="theme-btn" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span> <span id="theme-text">Dunkel</span>
-    </button>
+    <!-- (2) & (3) Action Buttons Einheit -->
+    <div class="action-controls">
+        <button class="theme-btn" onclick="toggleTheme()" id="themeToggle" aria-live="polite">
+            <svg id="sun-icon" class="btn-icon" style="display:none" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+            <svg id="moon-icon" class="btn-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            <span id="theme-text">Dunkel</span>
+        </button>
 
-    <button onclick="window.print()" class="print-btn">
-        <span>🖨️</span> Drucken
-    </button>
-</div>
+        <button onclick="window.print()" class="print-btn" aria-label="Liste drucken">
+            <svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-12 0v5h12v-5m-12-4h12"/></svg>
+            Drucken
+        </button>
+    </div>
+</header>
 
-<main id="directory"></main>
+<main id="directory" aria-label="Kontaktverzeichnis"></main>
 
 <script>
-    /* --- ICONS --- */
-    const ICON_PHONE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;
-    const ICON_MOBILE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
-    const ICON_MAIL = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+    /* Icons für Cards */
+    const ICON_PHONE = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`;
+    const ICON_MOBILE = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
+    const ICON_MAIL = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
 
-    /**
-     * Dark/Light Theme Toggle
-     */
     function toggleTheme() {
         const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         applyTheme(theme);
@@ -175,14 +203,13 @@
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('dir-theme', theme);
-        document.getElementById('theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
-        document.getElementById('theme-text').textContent = theme === 'dark' ? 'Hell' : 'Dunkel';
+        const isDark = theme === 'dark';
+        document.getElementById('sun-icon').style.display = isDark ? 'block' : 'none';
+        document.getElementById('moon-icon').style.display = isDark ? 'none' : 'block';
+        document.getElementById('theme-text').textContent = isDark ? 'Hell' : 'Dunkel';
     }
     applyTheme(localStorage.getItem('dir-theme') || 'light');
 
-    /**
-     * Search function
-     */
     function handleSearch() {
         const query = document.getElementById('search').value.toLowerCase();
         document.querySelectorAll('.dept-section').forEach(sec => {
@@ -196,25 +223,15 @@
         });
     }
 
-    /**
-     * Data Loading
-     */
     Papa.parse("data/kontakte.csv", {
         download: true, header: true, skipEmptyLines: true,
         complete: (results) => render(results.data)
     });
 
-    /**
-     * Rendering Logic
-     */
     function render(data) {
         const root = document.getElementById('directory');
         root.innerHTML = "";
-
-        // Sort by Department
         const sorted = data.filter(p => p.Abteilung && p.Name).sort((a,b) => a.Abteilung.localeCompare(b.Abteilung));
-        
-        // Group by Department
         const groups = sorted.reduce((acc, p) => {
             acc[p.Abteilung] = acc[p.Abteilung] || [];
             acc[p.Abteilung].push(p);
@@ -225,34 +242,19 @@
             const section = document.createElement('section');
             section.className = "dept-section";
             section.innerHTML = `<h2 class="section-header">${dept}</h2>`;
-
             const grid = document.createElement('div');
             grid.className = "cards-grid";
 
             groups[dept].forEach(p => {
-                // Ensure ColorCode is 2 digits (e.g. "3" becomes "03")
                 const code = p.ColorCode ? p.ColorCode.toString().padStart(2, '0') : '01';
-                
                 const card = document.createElement('div');
                 card.className = `contact-card cat-${code}`;
-                
                 const createRow = (icon, val, type) => {
                     if (!val || val === "-") return "";
                     const link = type === 'tel' ? `tel:${val.replace(/\s/g, '')}` : `mailto:${val}`;
-                    return `
-                        <div class="contact-row">
-                            <span class="icon-container">${icon}</span>
-                            <a href="${link}" class="contact-link" title="${val}">${val}</a>
-                        </div>`;
+                    return `<div class="contact-row"><span class="icon-container">${icon}</span><a href="${link}" class="contact-link" title="${val}">${val}</a></div>`;
                 };
-
-                card.innerHTML = `
-                    <h3>${p.Name}</h3>
-                    <div class="job-position">${p.Position || ''}</div>
-                    ${createRow(ICON_PHONE, p.Telefon, 'tel')}
-                    ${createRow(ICON_MOBILE, p.Mobiltelefon, 'tel')}
-                    ${createRow(ICON_MAIL, p.Email, 'mail')}
-                `;
+                card.innerHTML = `<h3>${p.Name}</h3><div class="job-position">${p.Position || ''}</div>${createRow(ICON_PHONE, p.Telefon, 'tel')}${createRow(ICON_MOBILE, p.Mobiltelefon, 'tel')}${createRow(ICON_MAIL, p.Email, 'mail')}`;
                 grid.appendChild(card);
             });
             section.appendChild(grid);
