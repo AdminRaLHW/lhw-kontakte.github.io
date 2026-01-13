@@ -17,7 +17,6 @@
             --text-muted: #64748b;
             --border-ui: #e2e8f0;
 
-            /* Category Colors */
             --hex-01: #81c784; --hex-02: #81c784; --hex-03: #ffa726;
             --hex-04: #ffa726; --hex-05: #4fc3f7; --hex-06: #1976d2;
             --hex-07: #1a237e; --hex-08: #00897b; --hex-09: #2e7d32;
@@ -42,7 +41,7 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Responsive Header Navigation */
+        /* --- NAVIGATION BAR --- */
         .no-print {
             display: flex;
             flex-wrap: wrap;
@@ -51,58 +50,72 @@
             padding: 15px 25px;
             background: var(--bg-panel);
             border-radius: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 8px; /* Reduziert für den Datums-Hinweis darunter */
             border: 1px solid var(--border-ui);
+        }
+
+        .main-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1 1 500px;
+            min-width: 0;
         }
 
         .logo-link {
             display: flex;
             align-items: center;
+            flex-shrink: 0;
             transition: opacity 0.2s;
         }
         .logo-link:hover { opacity: 0.8; }
-        .logo-link:focus { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+        .logo-link:focus { outline: 3px solid var(--accent); outline-offset: 5px; border-radius: 4px; }
         .logo { height: 45px; width: auto; }
 
         .search-wrapper {
-            flex: 1 1 300px;
-        }
-        
-        /* Visually Hidden Label for A11y */
-        .sr-only {
-            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-            overflow: hidden; clip: rect(0,0,0,0); border: 0;
+            flex-grow: 1;
+            min-width: 150px;
         }
 
         input {
             width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-ui);
             background: var(--bg-body); color: var(--text-main); font-size: 1rem;
+            outline: none; transition: border-color 0.2s;
         }
-        input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px hsl(from var(--accent) h s l / 0.2); }
 
-        /* Button Group Logic */
+        /* DATUMS-HINWEIS RECHTSBÜNDIG */
+        .update-hint {
+            text-align: right;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 30px; /* Abstand zum Directory-Grid */
+            padding-right: 10px;
+            font-style: italic;
+        }
+
         .action-controls {
             display: flex;
             gap: 10px;
-            flex: 1 1 auto; /* Grow when wrapped */
-            justify-content: flex-end;
+            flex: 1 0 auto;
         }
 
         .theme-btn, .print-btn {
-            flex: 1; /* Buttons share space equally within group */
-            min-width: 140px;
+            flex: 1;
+            min-width: 130px;
             display: flex; align-items: center; justify-content: center; gap: 8px; 
-            padding: 10px 18px; border-radius: 8px; border: 1px solid var(--border-ui); 
+            padding: 11px 18px; border-radius: 8px; border: 1px solid var(--border-ui); 
             background: var(--bg-panel); color: var(--text-main); cursor: pointer; 
             font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .theme-btn:hover, .print-btn:hover { background: var(--bg-body); border-color: var(--text-muted); }
-        .theme-btn:focus, .print-btn:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .theme-btn:focus, .print-btn:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-        .btn-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+        .btn-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; }
 
-        /* Grid & Cards */
+        /* --- DIRECTORY --- */
         .dept-section { margin-bottom: 40px; }
         .section-header { 
             font-size: 1.25rem; text-transform: uppercase; margin-bottom: 20px; 
@@ -131,7 +144,11 @@
         }
         .contact-link:hover, .contact-link:focus { color: var(--accent); text-decoration: underline; outline: none; }
 
-        /* Categories */
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); border: 0;
+        }
+
         .cat-01 { --accent: var(--hex-01); } .cat-02 { --accent: var(--hex-02); }
         .cat-03 { --accent: var(--hex-03); } .cat-04 { --accent: var(--hex-04); }
         .cat-05 { --accent: var(--hex-05); } .cat-06 { --accent: var(--hex-06); }
@@ -141,7 +158,7 @@
         .cat-13 { --accent: var(--hex-13); }
 
         @media print {
-            .no-print { display: none !important; }
+            .no-print, .update-hint { display: none !important; }
             body { background: white !important; padding: 0; }
             .contact-card {
                 background: white !important; border: 1px solid #ccc !important;
@@ -150,29 +167,25 @@
             }
         }
 
-        /* Mobile Adjustments */
-        @media (max-width: 600px) {
-            .no-print { padding: 15px; }
-            .search-wrapper { flex-basis: 100%; }
-            .action-controls { flex-basis: 100%; }
+        @media (max-width: 768px) {
+            .main-controls, .action-controls { flex-basis: 100%; }
         }
     </style>
 </head>
 <body>
 
 <header class="no-print">
-    <!-- (1) Logo mit Link zur Hauptseite -->
-    <a href="https://lebenshilfswerk-waren.de" class="logo-link" aria-label="Zur Startseite des Lebenshilfswerks Waren">
-        <img src="img/LHW Logo Trans.svg" alt="LHW Logo" class="logo">
-    </a>
+    <div class="main-controls">
+        <a href="https://lebenshilfswerk-waren.de" class="logo-link" aria-label="Zur Startseite des Lebenshilfswerks Waren">
+            <img src="img/LHW Logo Trans.svg" alt="LHW Logo" class="logo">
+        </a>
 
-    <!-- Suchfeld mit Label für A11y -->
-    <div class="search-wrapper">
-        <label for="search" class="sr-only">Kontakte suchen</label>
-        <input type="text" id="search" onkeyup="handleSearch()" placeholder="Name, Abteilung oder Position suchen..." aria-controls="directory">
+        <div class="search-wrapper">
+            <label for="search" class="sr-only">Kontakte suchen</label>
+            <input type="text" id="search" onkeyup="handleSearch()" placeholder="Name, Abteilung, Position..." aria-controls="directory">
+        </div>
     </div>
 
-    <!-- (2) & (3) Action Buttons Einheit -->
     <div class="action-controls">
         <button class="theme-btn" onclick="toggleTheme()" id="themeToggle" aria-live="polite">
             <svg id="sun-icon" class="btn-icon" style="display:none" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
@@ -187,13 +200,33 @@
     </div>
 </header>
 
+<!-- Letzte Änderung: Rechtsbündig unter dem Header -->
+<div id="last-update" class="update-hint" aria-hidden="true"></div>
+
 <main id="directory" aria-label="Kontaktverzeichnis"></main>
 
 <script>
-    /* Icons für Cards */
-    const ICON_PHONE = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`;
-    const ICON_MOBILE = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
-    const ICON_MAIL = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+    const CSV_PATH = "data/kontakte.csv";
+
+    /* Datum abrufen */
+    async function fetchLastModified() {
+        try {
+            const response = await fetch(CSV_PATH, { method: 'HEAD' });
+            const lastMod = response.headers.get("Last-Modified");
+            if (lastMod) {
+                const date = new Date(lastMod);
+                const formattedDate = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                document.getElementById('last-update').textContent = `Datenstand: ${formattedDate}`;
+            }
+        } catch (e) {
+            console.warn("Änderungsdatum nicht verfügbar.");
+        }
+    }
+    fetchLastModified();
+
+    const ICON_PHONE = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`;
+    const ICON_MOBILE = `<svg class="btn-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
+    const ICON_MAIL = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
 
     function toggleTheme() {
         const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
@@ -223,7 +256,7 @@
         });
     }
 
-    Papa.parse("data/kontakte.csv", {
+    Papa.parse(CSV_PATH, {
         download: true, header: true, skipEmptyLines: true,
         complete: (results) => render(results.data)
     });
