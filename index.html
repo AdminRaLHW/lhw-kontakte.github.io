@@ -9,10 +9,10 @@
 
     <style>
         :root {
-            --bg-opacity-area: 0.08; /* Sehr dezente Hintergrundfarbe für den Bereich */
+            --bg-opacity-area: 0.08;
             --card-min-width: 350px;
             --bg-body: #f4f7f9;
-            --bg-panel: #ffffff; /* Hintergrund der Karten (Weiß) */
+            --bg-panel: #ffffff;
             --text-main: #2c3e50;
             --text-muted: #64748b;
             --border-ui: #e2e8f0;
@@ -64,43 +64,53 @@
         }
         .update-hint { text-align: right; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 30px; padding-right: 10px; font-style: italic; }
 
-        /* --- BEREICHS-STYLING --- */
+        /* --- BEREICHS-STYLING (MIT FARBIGEM HINTERGRUND) --- */
         .bereich-section { 
-            margin-bottom: 40px;
-            padding: 30px;
-            border-radius: 20px;
-            /* Der Hintergrund wird über die Akzentfarbe des Bereichs gesteuert */
+            margin-bottom: 50px;
+            padding: 0; /* Padding wird nach innen verlagert für bündigen Header */
+            border-radius: 16px;
             background-color: hsl(from var(--accent) h s l / var(--bg-opacity-area));
-            border: 1px solid hsl(from var(--accent) h s l / 0.1);
+            border: 1px solid hsl(from var(--accent) h s l / 0.15);
+            overflow: hidden; /* Damit der Header oben nicht über die Rundung steht */
         }
         
+        /* BEREICHS-HEADER (VOLLFARBE & INVERTIERT) */
         .bereich-header { 
-            font-size: 1.6rem; text-transform: uppercase; margin: 0 0 25px 0; 
-            padding-bottom: 10px; border-bottom: 3px solid var(--accent);
-            letter-spacing: 0.05em; 
-            color: var(--accent); /* Header in Akzentfarbe */
+            font-size: 1.4rem; text-transform: uppercase; margin: 0; 
+            padding: 15px 25px; 
+            background-color: var(--accent); /* 100% Accent Farbe */
+            color: #ffffff; /* Maximaler Kontrast (Weiß) */
+            letter-spacing: 0.08em; 
+            font-weight: 800;
         }
 
-        .abteilung-group { margin-bottom: 30px; }
+        .bereich-content {
+            padding: 25px; /* Innerer Abstand für den Inhalt unter der Überschrift */
+        }
+
+        .abteilung-group { margin-bottom: 35px; }
         .abteilung-header {
             font-size: 1.15rem; color: var(--text-main); margin: 0 0 15px 0;
             display: flex; align-items: center; gap: 10px; font-weight: 700;
+        }
+        .abteilung-header::before {
+            content: ""; width: 4px; height: 18px; background: var(--accent); border-radius: 2px;
         }
 
         .cards-grid { 
             display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); gap: 20px; 
         }
 
-        /* --- KONTAKTKARTE (JETZT WEISS) --- */
+        /* --- KONTAKTKARTE (MASSIV WEISS) --- */
         .contact-card {
-            background-color: var(--bg-panel); /* IMMER WEISS/PANEL-FARBE */
+            background-color: var(--bg-panel);
             border-left: 6px solid var(--accent);
             padding: 22px; border-radius: 12px; display: flex; flex-direction: column;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06); transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .contact-card:hover { 
             transform: translateY(-4px); 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .contact-card h4 { margin: 0 0 5px 0; font-size: 1.25rem; color: var(--text-main); }
         .job-position { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; border-bottom: 1px solid var(--border-ui); padding-bottom: 10px; }
@@ -128,8 +138,9 @@
         @media print {
             .no-print, .update-hint { display: none !important; }
             body { background: white !important; }
-            .bereich-section { background: none !important; border: none !important; padding: 0 !important; }
-            .contact-card { border: 1px solid #eee !important; border-left: 10px solid var(--accent) !important; break-inside: avoid; }
+            .bereich-section { background: none !important; border: 1px solid #ccc !important; padding: 0 !important; }
+            .bereich-header { background: #333 !important; color: white !important; -webkit-print-color-adjust: exact; }
+            .contact-card { border: 1px solid #eee !important; border-left: 8px solid var(--accent) !important; break-inside: avoid; }
         }
     </style>
 </head>
@@ -248,9 +259,11 @@
         sortedBereiche.forEach(bName => {
             const sectionCode = areaSortMap[bName].toString().padStart(2, '0');
             const bereichSection = document.createElement('section');
-            // Die Kategorie-Klasse (cat-XX) jetzt an die Sektion für den Hintergrund
             bereichSection.className = `bereich-section cat-${sectionCode}`;
-            bereichSection.innerHTML = `<h2 class="bereich-header">${bName}</h2>`;
+            
+            // Aufbau mit neuem Content-Wrapper für das Padding
+            bereichSection.innerHTML = `<h2 class="bereich-header">${bName}</h2><div class="bereich-content"></div>`;
+            const contentWrapper = bereichSection.querySelector('.bereich-content');
 
             const sortedAbteilungen = Object.keys(groupedData[bName]).sort();
             sortedAbteilungen.forEach(aName => {
@@ -262,7 +275,7 @@
 
                 groupedData[bName][aName].sort((x,y) => x.Name.localeCompare(y.Name)).forEach(p => {
                     const card = document.createElement('div');
-                    card.className = `contact-card`; // cat-Klasse nicht mehr nötig hier
+                    card.className = `contact-card`;
                     
                     const createRow = (icon, val, type) => {
                         if (!val || val === "-") return "";
@@ -280,7 +293,7 @@
                     grid.appendChild(card);
                 });
                 abtGroup.appendChild(grid);
-                bereichSection.appendChild(abtGroup);
+                contentWrapper.appendChild(abtGroup);
             });
             root.appendChild(bereichSection);
         });
