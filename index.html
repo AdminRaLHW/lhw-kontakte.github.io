@@ -30,6 +30,9 @@
             --hex-10: #8e24aa; --hex-11: #c2185b; --hex-12: #fbc02d;
             --hex-13: #d84315;
             --accent: #444444; 
+
+            /* Accessibility Defaults */
+            --acc-font-scale: 1;
         }
 
         [data-theme="dark"] {
@@ -44,20 +47,31 @@
             --card-text-muted: #444444;
         }
 
+        html {
+            /* Dynamische Schriftgröße basierend auf Skala */
+            font-size: calc(16px * var(--acc-font-scale));
+        }
+
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
-            padding: 20px; margin: 0; background: var(--bg-body); color: var(--text-main);
-            transition: background 0.3s, color 0.3s, filter 0.3s;
+            padding: 0; margin: 0; background: var(--bg-body); color: var(--text-main);
+            transition: background 0.3s, color 0.3s;
         }
 
-        /* --- ACCESSIBILITY CLASSES (Wird per JS gesteuert) --- */
-        body.acc-grayscale { filter: grayscale(1) !important; }
-        body.acc-invert { filter: invert(1) hue-rotate(180deg) !important; }
-        body.acc-high-contrast { background: #000 !important; color: #fff !important; }
-        body.acc-high-contrast .contact-card { background: #000 !important; border: 2px solid #fff !important; color: #fff !important; }
-        body.acc-high-contrast .contact-link, body.acc-high-contrast h4 { color: #fff !important; }
-        body.acc-high-contrast .bereich-section { background: #111 !important; border: 1px solid #fff !important; }
+        /* Container für den Inhalt, damit Filter den FAB-Button nicht beeinflussen */
+        #app-wrapper {
+            padding: 20px;
+            transition: filter 0.3s;
+        }
+
+        /* Accessibility Filter (Nur auf Wrapper) */
+        .acc-grayscale #app-wrapper { filter: grayscale(1) !important; }
+        .acc-invert #app-wrapper { filter: invert(1) hue-rotate(180deg) !important; }
+        .acc-high-contrast #app-wrapper { background: #000 !important; color: #fff !important; }
+        .acc-high-contrast .contact-card { background: #000 !important; border: 2px solid #fff !important; color: #fff !important; }
+        .acc-high-contrast .contact-link, .acc-high-contrast h4 { color: #fff !important; }
+        .acc-high-contrast .bereich-section { background: #111 !important; border: 1px solid #fff !important; }
 
         .print-only { display: none; }
 
@@ -92,20 +106,9 @@
 
         /* --- WEB FOOTER --- */
         .web-footer {
-            max-width: 100%;
-            margin-top: 80px;
-            padding: 25px 40px;
-            border-top: 1px solid var(--border-ui);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            background: var(--bg-panel);
-        }
-
-        @media (max-width: 768px) {
-            .web-footer { flex-direction: column; gap: 10px; text-align: center; }
+            max-width: 100%; margin-top: 80px; padding: 25px 40px; border-top: 1px solid var(--border-ui);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; color: var(--text-muted); background: var(--bg-panel);
         }
 
         /* --- BEREICHS-STYLING --- */
@@ -120,7 +123,6 @@
             font-size: 1.4rem; text-transform: uppercase; margin: 0; padding: 18px 25px; 
             background-color: var(--accent); color: #ffffff;
             letter-spacing: 0.08em; font-weight: 800;
-            -webkit-print-color-adjust: exact; print-color-adjust: exact;
         }
 
         .bereich-content { padding: 25px; }
@@ -133,7 +135,6 @@
             background-color: var(--card-bg); border-left: 6px solid var(--accent);
             padding: 22px; border-radius: 12px; display: flex; flex-direction: column;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            -webkit-print-color-adjust: exact; print-color-adjust: exact;
         }
         
         .contact-card h4 { margin: 0 0 5px 0; font-size: 1.25rem; color: #000; }
@@ -159,104 +160,67 @@
             position: fixed; bottom: 30px; right: 30px;
             width: 60px; height: 60px; border-radius: 50%;
             background-color: #2e7d32; color: white; border: none;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
-            transition: transform 0.2s;
+            cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .acc-toggle-btn:hover { transform: scale(1.1); }
-        .acc-toggle-btn svg { width: 32px; height: 32px; fill: white; }
+        .acc-toggle-btn:hover { transform: scale(1.15); }
+        .acc-toggle-btn svg { width: 34px; height: 34px; fill: white; }
 
         .acc-sidebar {
-            position: fixed; top: 0; right: -350px; width: 320px; height: 100vh;
-            z-index: 1002; transition: right 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(15px) saturate(180%);
-            -webkit-backdrop-filter: blur(15px) saturate(180%);
-            border-left: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            position: fixed; top: 0; right: -360px; width: 340px; height: 100vh;
+            z-index: 10000; transition: right 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.2);
             padding: 30px; display: flex; flex-direction: column; gap: 20px; color: #000;
         }
         [data-theme="dark"] .acc-sidebar { 
-            background: rgba(30, 30, 30, 0.75); color: #fff; 
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(20, 20, 20, 0.85); color: #fff; border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
         .acc-sidebar.open { right: 0; }
 
         .acc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .close-acc { background: none; border: none; font-size: 2.5rem; cursor: pointer; color: inherit; line-height: 1; }
 
-        .acc-section { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .acc-section label { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; opacity: 0.8; }
+        .acc-section { display: flex; flex-direction: column; gap: 8px; }
+        .acc-section label { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
         
-        .acc-slider { width: 100%; accent-color: #2e7d32; cursor: pointer; height: 8px; border-radius: 4px; }
+        .acc-slider { 
+            width: 100%; accent-color: #2e7d32; cursor: pointer; height: 25px; 
+            background: transparent; -webkit-appearance: none;
+        }
+        .acc-slider::-webkit-slider-runnable-track { background: var(--border-ui); height: 6px; border-radius: 3px; }
+        .acc-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; background: #2e7d32; border-radius: 50%; margin-top: -6px; }
 
         .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .acc-btn {
-            padding: 12px 8px; border: 1px solid var(--border-ui); border-radius: 8px;
+            padding: 12px 8px; border: 1px solid var(--border-ui); border-radius: 10px;
             background: var(--bg-panel); color: var(--text-main); cursor: pointer;
-            font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
+            font-size: 0.8rem; font-weight: 700; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .acc-btn:hover { background: #2e7d32; color: white; border-color: #2e7d32; }
-        .acc-btn.active { border: 2px solid #2e7d32; background: rgba(46, 125, 50, 0.1); }
+        .acc-btn svg { width: 16px; height: 16px; stroke-width: 2.5; }
+        .acc-btn:hover { border-color: #2e7d32; color: #2e7d32; transform: translateY(-2px); }
+        .acc-btn.active { border: 2px solid #2e7d32; background: rgba(46, 125, 50, 0.15); color: #2e7d32; }
 
         .acc-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-            display: none; z-index: 1001; backdrop-filter: blur(2px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.2);
+            display: none; z-index: 9998; /* Kein Blur hier! */
         }
         .acc-overlay.show { display: block; }
 
-        /* --- PRINT STYLES --- */
         @media print {
-            @page { margin: 15mm; size: auto; }
-            .no-print, .update-hint, .acc-toggle-btn, .acc-sidebar { display: none !important; }
-            .print-only { display: block; }
-            body { background: white !important; padding: 0; margin: 0; filter: none !important; font-size: 10pt !important; }
-            
-            .print-cover { position: relative; height: 98vh; display: flex; flex-direction: column; justify-content: center; break-after: page; padding: 50px; }
-            .cover-header { display: flex; align-items: center; gap: 30px; border-bottom: 4px solid #000; padding-bottom: 25px; margin-bottom: 60px; }
-            .cover-header h1 { font-size: 32pt; margin: 0; text-transform: uppercase; font-weight: 900; white-space: nowrap; }
-            .cover-logo { height: 70px; width: auto; }
-
-            .cover-footer { 
-                position: absolute; bottom: 40px; left: 50px; right: 50px;
-                border-top: 1px solid #000; padding-top: 15px;
-                display: flex; justify-content: space-between; align-items: center;
-                font-size: 10pt; color: #000;
-            }
-
-            .toc-container { margin-top: 40px; }
-            .toc-title { font-size: 18pt; font-weight: bold; margin-bottom: 30px; border-bottom: 1px solid #000; padding-bottom: 10px; }
-            .toc-item { display: flex; align-items: center; margin-bottom: 12px; font-size: 12pt; }
-            .toc-color-box { width: 25px; height: 25px; border-radius: 4px; margin-right: 15px; flex-shrink: 0; border: 1px solid #ddd; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .toc-name { flex-grow: 0; font-weight: 600; }
-            .toc-dots { flex-grow: 1; border-bottom: 2px dotted #ccc; margin: 0 10px; position: relative; top: -4px; }
-            .toc-page { font-weight: bold; font-family: monospace; font-size: 13pt; }
-
-            .bereich-section { 
-                break-before: page; 
-                margin: 0 0 30px 0 !important; 
-                border: none !important; 
-                border-radius: 0 !important;
-                background-color: hsl(from var(--accent) h s l / var(--bg-opacity-area)) !important;
-                -webkit-print-color-adjust: exact; print-color-adjust: exact;
-                -webkit-box-decoration-break: clone; box-decoration-break: clone;
-            }
-            
-            .bereich-content { padding: 10px 25px 40px 25px; }
-            .abteilung-group { break-inside: avoid; page-break-inside: avoid; padding-top: 25px; }
-            .contact-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #eee !important; box-shadow: none !important; }
-
-            .contact-link { 
-                display: block; padding-left: 20px; text-indent: -20px;
-                line-height: 1.2; font-size: 0.9rem; word-wrap: break-word;
-            }
+            .acc-toggle-btn, .acc-sidebar, .acc-overlay { display: none !important; }
+            #app-wrapper { padding: 0; filter: none !important; }
         }
     </style>
 </head>
-<body>
+<body class="acc-default">
 
-<!-- Accessibility Overlay & Sidebar -->
+<!-- UI-Elemente außerhalb des gefilterten Wrappers -->
 <div id="accOverlay" class="acc-overlay" onclick="toggleAccMenu()"></div>
 
 <button class="acc-toggle-btn" onclick="toggleAccMenu()" aria-label="Barrierefreiheit Menü öffnen">
@@ -265,131 +229,127 @@
 
 <aside id="accSidebar" class="acc-sidebar" role="dialog" aria-labelledby="accTitle">
     <div class="acc-header">
-        <h2 id="accTitle" style="margin:0; font-size: 1.2rem; font-weight: 800;">Barrierefreiheit</h2>
+        <h2 id="accTitle" style="margin:0; font-size: 1.1rem; font-weight: 900; text-transform: uppercase;">Barrierefreiheit</h2>
         <button class="close-acc" onclick="toggleAccMenu()" aria-label="Schließen">&times;</button>
     </div>
 
     <div class="acc-section">
-        <label for="slider-font">Schriftgröße</label>
-        <input type="range" id="slider-font" class="acc-slider" min="0.8" max="1.4" step="0.05" value="1">
+        <label for="slider-font">Textgröße</label>
+        <input type="range" id="slider-font" class="acc-slider" min="0.7" max="1.5" step="0.05" value="1">
     </div>
 
     <div class="acc-section">
         <label for="slider-line">Zeilenabstand</label>
-        <input type="range" id="slider-line" class="acc-slider" min="1" max="2" step="0.1" value="1.5">
+        <input type="range" id="slider-line" class="acc-slider" min="1" max="2.2" step="0.1" value="1.5">
     </div>
 
     <div class="acc-section">
         <label for="slider-spacing">Zeichenabstand</label>
-        <input type="range" id="slider-spacing" class="acc-slider" min="0" max="4" step="0.5" value="0">
+        <input type="range" id="slider-spacing" class="acc-slider" min="-0.5" max="5" step="0.5" value="0">
     </div>
 
-    <hr style="width:100%; border: 0; border-top: 1px solid var(--border-ui); margin: 10px 0;">
+    <hr style="width:100%; border: 0; border-top: 1px solid var(--border-ui); margin: 10px 0; opacity: 0.3;">
 
     <div class="acc-section">
         <label>Anzeige-Modus</label>
         <div class="theme-grid">
-            <button class="acc-btn" onclick="setAccTheme('default')" id="btn-def">Standard</button>
-            <button class="acc-btn" onclick="setAccTheme('grayscale')" id="btn-gray">Graustufen</button>
-            <button class="acc-btn" onclick="setAccTheme('invert')" id="btn-inv">Invertiert</button>
-            <button class="acc-btn" onclick="setAccTheme('high-contrast')" id="btn-high">Kontrast</button>
+            <button class="acc-btn" onclick="setAccTheme('default')" id="btn-def">
+                Standard
+            </button>
+            <button class="acc-btn" onclick="setAccTheme('grayscale')" id="btn-gray">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"/></svg>
+                Graustufen
+            </button>
+            <button class="acc-btn" onclick="setAccTheme('invert')" id="btn-inv">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"/></svg>
+                Invertiert
+            </button>
+            <button class="acc-btn" onclick="setAccTheme('high-contrast')" id="btn-high">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M6 12h12"/></svg>
+                Kontrast
+            </button>
         </div>
     </div>
 
-    <button class="acc-btn" style="margin-top: auto; background: #8e24aa; color: white; border: none;" onclick="resetAcc()">
-        Zurücksetzen
+    <button class="acc-btn" style="margin-top: auto; background: #d32f2f; color: white; border: none;" onclick="resetAcc()">
+        Einstellungen zurücksetzen
     </button>
 </aside>
 
+<!-- Gesamter Seiteninhalt im Wrapper -->
+<div id="app-wrapper">
 
-<!-- Titelseite & Legende (Druck) -->
-<div class="print-only">
-    <div class="print-cover">
-        <div class="cover-header">
-            <img src="img/LHW Logo Trans.svg" alt="Logo" class="cover-logo">
-            <div>
-                <h1>Kontaktverzeichnis</h1>
-                <p id="print-date" style="font-size: 14pt; color: #666; margin-top: 10px;">Datenstand: --</p>
+    <div class="print-only">
+        <div class="print-cover">
+            <div class="cover-header">
+                <img src="img/LHW Logo Trans.svg" alt="Logo" class="cover-logo">
+                <div>
+                    <h1>Kontaktverzeichnis</h1>
+                    <p id="print-date" style="font-size: 14pt; color: #666; margin-top: 10px;">Datenstand: --</p>
+                </div>
+            </div>
+            <div class="toc-container">
+                <div class="toc-title">Farbleitsystem & Bereiche</div>
+                <div id="print-toc"></div>
+            </div>
+            <div class="cover-footer">
+                <span style="font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">Lebenshilfswerk Waren gGmbH</span>
+                <span id="print-footer-info"></span>
             </div>
         </div>
-        <div class="toc-container">
-            <div class="toc-title">Farbleitsystem & Bereiche</div>
-            <div id="print-toc"></div>
-        </div>
-        <div class="cover-footer">
-            <span style="font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">Lebenshilfswerk Waren gGmbH</span>
-            <span id="print-footer-info"></span>
-        </div>
     </div>
-</div>
 
-<header class="no-print">
-    <div class="main-controls">
-        <a href="https://lebenshilfswerk-waren.de" class="logo-link">
-            <img src="img/LHW Logo Trans.svg" alt="LHW Logo" class="logo">
-        </a>
-        <div class="search-wrapper">
-            <input type="text" id="search" onkeyup="handleSearch()" placeholder="Suchen nach Name, Bereich oder Abteilung...">
+    <header class="no-print">
+        <div class="main-controls">
+            <a href="https://lebenshilfswerk-waren.de" class="logo-link">
+                <img src="img/LHW Logo Trans.svg" alt="LHW Logo" class="logo">
+            </a>
+            <div class="search-wrapper">
+                <input type="text" id="search" onkeyup="handleSearch()" placeholder="Suchen nach Name, Bereich oder Abteilung...">
+            </div>
         </div>
-    </div>
-    <div class="action-controls">
-        <button class="theme-btn" onclick="toggleTheme()" id="themeToggle">
-            <svg id="sun-icon" class="btn-icon" style="display:none" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-            <svg id="moon-icon" class="btn-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-            <span id="theme-text" style="margin-left: 8px">Dunkel</span>
-        </button>
-        <button onclick="window.print()" class="print-btn">
-            <svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-12 0v5h12v-5m-12-4h12"/></svg>
-            Drucken
-        </button>
-    </div>
-</header>
+        <div class="action-controls">
+            <button class="theme-btn" onclick="toggleTheme()" id="themeToggle">
+                <svg id="sun-icon" class="btn-icon" style="display:none" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                <svg id="moon-icon" class="btn-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                <span id="theme-text" style="margin-left: 8px">Dunkel</span>
+            </button>
+            <button onclick="window.print()" class="print-btn">
+                <svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-12 0v5h12v-5m-12-4h12"/></svg>
+                Drucken
+            </button>
+        </div>
+    </header>
 
-<div id="last-update" class="update-hint"></div>
-<main id="directory"></main>
+    <div id="last-update" class="update-hint"></div>
+    <main id="directory"></main>
 
-<footer class="no-print web-footer">
-    <div style="font-weight: 800; text-transform: uppercase;">Lebenshilfswerk Waren gGmbH</div>
-    <div id="web-footer-info"></div>
-</footer>
+    <footer class="no-print web-footer">
+        <div style="font-weight: 800; text-transform: uppercase;">Lebenshilfswerk Waren gGmbH</div>
+        <div id="web-footer-info"></div>
+    </footer>
+
+</div> <!-- Ende app-wrapper -->
 
 <script>
-    /* --- KONFIGURATION DER NAMEN --- */
+    /* --- KONFIGURATION & DATEN --- */
     const CONFIG_NAMES = {
         programmedBy: ["Dan Schneider"],
         maintainedBy: ["Simone Herzog, Gordon Kempf, Dan Schneider"]
     };
-
     const CSV_PATH = "data/kontakte.csv";
-
     const ICON_PHONE = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`;
     const ICON_MOBILE = `<svg class="btn-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
     const ICON_MAIL = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
 
-    // Footer-Texte generieren
     function setupFooters() {
-        const prog = CONFIG_NAMES.programmedBy.join(", ");
-        const maint = CONFIG_NAMES.maintainedBy.join(", ");
-        const text = `gewartet von: ${maint}  entwickelt von: ${prog}`;
+        const text = `gewartet von: ${CONFIG_NAMES.maintainedBy.join(", ")}  entwickelt von: ${CONFIG_NAMES.programmedBy.join(", ")}`;
         document.getElementById('web-footer-info').textContent = text;
         document.getElementById('print-footer-info').textContent = text;
     }
     setupFooters();
 
-    async function fetchLastModified() {
-        try {
-            const response = await fetch(CSV_PATH, { method: 'HEAD' });
-            const lastMod = response.headers.get("Last-Modified");
-            if (lastMod) {
-                const date = new Date(lastMod);
-                const dateStr = `Datenstand: ${date.toLocaleDateString('de-DE')}`;
-                document.getElementById('last-update').textContent = dateStr;
-                document.getElementById('print-date').textContent = dateStr;
-            }
-        } catch (e) {}
-    }
-    fetchLastModified();
-
+    /* --- THEME LOGIK (HELL/DUNKEL) --- */
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         const isDark = theme === 'dark';
@@ -404,14 +364,7 @@
         applyTheme(newTheme);
     }
 
-    function handleSearch() {
-        const q = document.getElementById('search').value.toLowerCase();
-        document.querySelectorAll('.bereich-section').forEach(sec => {
-            sec.style.display = sec.textContent.toLowerCase().includes(q) ? "" : "none";
-        });
-    }
-
-    /* --- ACCESSIBILITY LOGIC --- */
+    /* --- ACCESSIBILITY LOGIK --- */
     const sidebar = document.getElementById('accSidebar');
     const overlay = document.getElementById('accOverlay');
     let accSettings = JSON.parse(localStorage.getItem('lhw-acc-settings')) || {
@@ -423,27 +376,25 @@
         overlay.classList.toggle('show');
     }
 
-    // Schließen mit Escape
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && sidebar.classList.contains('open')) toggleAccMenu();
-    });
-
     function setAccTheme(theme) {
         accSettings.theme = theme;
         applyAccSettings();
     }
 
     function applyAccSettings() {
-        document.body.style.fontSize = accSettings.fontSize + "rem";
+        // Skalierung über Root-Variable für echte dynamische Größe
+        document.documentElement.style.setProperty('--acc-font-scale', accSettings.fontSize);
         document.body.style.lineHeight = accSettings.lineHeight;
         document.body.style.letterSpacing = accSettings.letterSpacing + "px";
 
-        document.body.classList.remove('acc-grayscale', 'acc-invert', 'acc-high-contrast');
-        if(accSettings.theme !== 'default') document.body.classList.add('acc-' + accSettings.theme);
+        // Klassen auf Body setzen (für Filter-Mapping)
+        document.body.classList.remove('acc-grayscale', 'acc-invert', 'acc-high-contrast', 'acc-default');
+        document.body.classList.add('acc-' + accSettings.theme);
 
+        // Buttons updaten
         document.querySelectorAll('.acc-btn').forEach(b => b.classList.remove('active'));
-        const activeBtnId = { 'default': 'btn-def', 'grayscale': 'btn-gray', 'invert': 'btn-inv', 'high-contrast': 'btn-high' }[accSettings.theme];
-        document.getElementById(activeBtnId).classList.add('active');
+        const btnMap = { 'default': 'btn-def', 'grayscale': 'btn-gray', 'invert': 'btn-inv', 'high-contrast': 'btn-high' };
+        document.getElementById(btnMap[accSettings.theme]).classList.add('active');
 
         localStorage.setItem('lhw-acc-settings', JSON.stringify(accSettings));
     }
@@ -456,30 +407,47 @@
         applyAccSettings();
     }
 
-    // Listeners for Sliders
     document.getElementById('slider-font').addEventListener('input', e => { accSettings.fontSize = e.target.value; applyAccSettings(); });
     document.getElementById('slider-line').addEventListener('input', e => { accSettings.lineHeight = e.target.value; applyAccSettings(); });
     document.getElementById('slider-spacing').addEventListener('input', e => { accSettings.letterSpacing = e.target.value; applyAccSettings(); });
 
-    // Init Accessibility
-    window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('slider-font').value = accSettings.fontSize;
-        document.getElementById('slider-line').value = accSettings.lineHeight;
-        document.getElementById('slider-spacing').value = accSettings.letterSpacing;
-        applyAccSettings();
-    });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sidebar.classList.contains('open')) toggleAccMenu(); });
 
-    /* --- DATA RENDERING --- */
+    /* --- DATEN-STAND --- */
+    async function fetchLastModified() {
+        try {
+            const response = await fetch(CSV_PATH, { method: 'HEAD' });
+            const lastMod = response.headers.get("Last-Modified");
+            if (lastMod) {
+                const date = new Date(lastMod);
+                const dateStr = `Datenstand: ${date.toLocaleDateString('de-DE')}`;
+                document.getElementById('last-update').textContent = dateStr;
+                document.getElementById('print-date').textContent = dateStr;
+            }
+        } catch (e) {}
+    }
+    fetchLastModified();
+
+    /* --- RENDERING --- */
+    function handleSearch() {
+        const q = document.getElementById('search').value.toLowerCase();
+        document.querySelectorAll('.bereich-section').forEach(sec => {
+            sec.style.display = sec.textContent.toLowerCase().includes(q) ? "" : "none";
+        });
+    }
+
     Papa.parse(CSV_PATH, {
         download: true, header: true, skipEmptyLines: true,
-        complete: (results) => render(results.data)
+        complete: (results) => {
+            render(results.data);
+            applyAccSettings(); // Nach Rendering Acc-Settings nochmal forcieren
+        }
     });
 
     function render(data) {
         const root = document.getElementById('directory');
         const tocRoot = document.getElementById('print-toc');
-        root.innerHTML = "";
-        tocRoot.innerHTML = "";
+        root.innerHTML = ""; tocRoot.innerHTML = "";
 
         const areaSortMap = {}; 
         const groupedData = data.reduce((acc, p) => {
