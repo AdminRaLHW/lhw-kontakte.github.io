@@ -9,30 +9,42 @@
 
     <style>
         :root {
-            --bg-opacity-area: 0.08;
-            --card-min-width: 350px;
-            --bg-body: #f4f7f9;
+            /* UI MONOCHROM (Light) */
+            --bg-body: #f2f2f2;
             --bg-panel: #ffffff;
-            --text-main: #2c3e50;
-            --text-muted: #64748b;
-            --border-ui: #e2e8f0;
+            --text-main: #000000;
+            --text-muted: #555555;
+            --border-ui: #cccccc;
+            --bg-opacity-area: 0.1; /* Dezente Farbe im Hellen */
+            
+            /* Card Settings (Immer Weiß) */
+            --card-bg: #ffffff;
+            --card-text: #1a1a1a;
+            --card-text-muted: #555555;
+            --card-min-width: 350px;
 
-            /* Category HEX Colors */
+            /* Category HEX Colors (Bleiben als Akzente erhalten) */
             --hex-01: #81c784; --hex-02: #81c784; --hex-03: #ffa726;
             --hex-04: #ffa726; --hex-05: #4fc3f7; --hex-06: #1976d2;
             --hex-07: #1a237e; --hex-08: #00897b; --hex-09: #2e7d32;
             --hex-10: #8e24aa; --hex-11: #c2185b; --hex-12: #fbc02d;
             --hex-13: #d84315;
-            --accent: #455a64; 
+            --accent: #444444; 
         }
 
         [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-panel: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border-ui: #334155;
-            --bg-opacity-area: 0.12;
+            /* UI MONOCHROM (Dark) */
+            --bg-body: #121212;
+            --bg-panel: #222222;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-ui: #444444;
+            --bg-opacity-area: 0.25; /* Deutlichere Farbe im Dunkeln */
+            
+            /* Cards bleiben Weiß im Dark Mode */
+            --card-bg: #ffffff;
+            --card-text: #000000;
+            --card-text-muted: #444444;
         }
 
         * { box-sizing: border-box; }
@@ -49,13 +61,17 @@
             margin-bottom: 8px; border: 1px solid var(--border-ui);
         }
         .main-controls { display: flex; align-items: center; gap: 20px; flex: 1 1 500px; min-width: 0; }
-        .logo { height: 45px; width: auto; }
+        .logo { height: 45px; width: auto; filter: grayscale(1); transition: filter 0.3s; }
+        [data-theme="dark"] .logo { filter: grayscale(1) invert(1); } /* Logo Anpassung für Dark Mode */
+        .logo-link:hover .logo { filter: grayscale(0) invert(0); }
+
         .search-wrapper { flex-grow: 1; min-width: 150px; }
         input {
             width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-ui);
             background: var(--bg-body); color: var(--text-main); font-size: 1rem; outline: none;
         }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px hsl(from var(--accent) h s l / 0.2); }
+        input:focus { border-color: var(--text-main); }
+
         .action-controls { display: flex; gap: 10px; flex: 1 0 auto; }
         .theme-btn, .print-btn {
             flex: 1; min-width: 130px; display: flex; align-items: center; justify-content: center; gap: 8px; 
@@ -64,30 +80,20 @@
         }
         .update-hint { text-align: right; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 30px; padding-right: 10px; font-style: italic; }
 
-        /* --- BEREICHS-STYLING (MIT FARBIGEM HINTERGRUND) --- */
+        /* --- BEREICHS-STYLING --- */
         .bereich-section { 
-            margin-bottom: 50px;
-            padding: 0; /* Padding wird nach innen verlagert für bündigen Header */
-            border-radius: 16px;
+            margin-bottom: 50px; border-radius: 16px;
             background-color: hsl(from var(--accent) h s l / var(--bg-opacity-area));
-            border: 1px solid hsl(from var(--accent) h s l / 0.15);
-            overflow: hidden; /* Damit der Header oben nicht über die Rundung steht */
+            border: 1px solid var(--border-ui); overflow: hidden;
         }
         
-        /* BEREICHS-HEADER (VOLLFARBE & INVERTIERT) */
         .bereich-header { 
-            font-size: 1.4rem; text-transform: uppercase; margin: 0; 
-            padding: 15px 25px; 
-            background-color: var(--accent); /* 100% Accent Farbe */
-            color: #ffffff; /* Maximaler Kontrast (Weiß) */
-            letter-spacing: 0.08em; 
-            font-weight: 800;
+            font-size: 1.4rem; text-transform: uppercase; margin: 0; padding: 18px 25px; 
+            background-color: var(--accent); color: #ffffff;
+            letter-spacing: 0.08em; font-weight: 800;
         }
 
-        .bereich-content {
-            padding: 25px; /* Innerer Abstand für den Inhalt unter der Überschrift */
-        }
-
+        .bereich-content { padding: 25px; }
         .abteilung-group { margin-bottom: 35px; }
         .abteilung-header {
             font-size: 1.15rem; color: var(--text-main); margin: 0 0 15px 0;
@@ -101,29 +107,27 @@
             display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); gap: 20px; 
         }
 
-        /* --- KONTAKTKARTE (MASSIV WEISS) --- */
+        /* --- KONTAKTKARTE (FIXIERT WEISS) --- */
         .contact-card {
-            background-color: var(--bg-panel);
+            background-color: var(--card-bg);
             border-left: 6px solid var(--accent);
             padding: 22px; border-radius: 12px; display: flex; flex-direction: column;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06); transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease;
         }
-        .contact-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .contact-card h4 { margin: 0 0 5px 0; font-size: 1.25rem; color: var(--text-main); }
-        .job-position { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; border-bottom: 1px solid var(--border-ui); padding-bottom: 10px; }
+        .contact-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        
+        .contact-card h4 { margin: 0 0 5px 0; font-size: 1.25rem; color: var(--card-text); }
+        .job-position { color: var(--card-text-muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; border-bottom: 1px solid #eeeeee; padding-bottom: 10px; }
         
         .contact-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .icon-container { width: 18px; height: 18px; flex-shrink: 0; color: var(--accent); }
         .contact-link {
-            text-decoration: none; color: var(--text-main); font-size: 0.95rem;
+            text-decoration: none; color: var(--card-text); font-size: 0.95rem;
             transition: color 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .contact-link:hover { color: var(--accent); text-decoration: underline; }
 
-        /* --- FARB-MAPPING --- */
+        /* --- AKZENT-MAPPING --- */
         .cat-01 { --accent: var(--hex-01); } .cat-02 { --accent: var(--hex-02); }
         .cat-03 { --accent: var(--hex-03); } .cat-04 { --accent: var(--hex-04); }
         .cat-05 { --accent: var(--hex-05); } .cat-06 { --accent: var(--hex-06); }
@@ -138,9 +142,9 @@
         @media print {
             .no-print, .update-hint { display: none !important; }
             body { background: white !important; }
-            .bereich-section { background: none !important; border: 1px solid #ccc !important; padding: 0 !important; }
-            .bereich-header { background: #333 !important; color: white !important; -webkit-print-color-adjust: exact; }
-            .contact-card { border: 1px solid #eee !important; border-left: 8px solid var(--accent) !important; break-inside: avoid; }
+            .bereich-section { background: none !important; border: 1px solid #000 !important; padding: 0 !important; }
+            .bereich-header { background: #000 !important; color: white !important; -webkit-print-color-adjust: exact; }
+            .contact-card { border: 1px solid #ccc !important; border-left: 8px solid var(--accent) !important; break-inside: avoid; }
         }
     </style>
 </head>
@@ -153,7 +157,7 @@
         </a>
         <div class="search-wrapper">
             <label for="search" class="sr-only">Suche</label>
-            <input type="text" id="search" onkeyup="handleSearch()" placeholder="Name, Bereich oder Abteilung suchen..." aria-controls="directory">
+            <input type="text" id="search" onkeyup="handleSearch()" placeholder="Suchen nach Name, Bereich oder Abteilung..." aria-controls="directory">
         </div>
     </div>
     <div class="action-controls">
@@ -225,7 +229,6 @@
                     card.style.display = isVisible ? "" : "none";
                     if (isVisible) abtHasVisibleContent = true;
                 });
-
                 abtGrp.style.display = (abtMatch || abtHasVisibleContent) ? "" : "none";
                 if (abtMatch || abtHasVisibleContent) bereichHasVisibleContent = true;
             });
@@ -241,7 +244,6 @@
     function render(data) {
         const root = document.getElementById('directory');
         root.innerHTML = "";
-
         const areaSortMap = {}; 
         const groupedData = data.reduce((acc, p) => {
             const b = (p.Bereich && p.Bereich.trim() !== "") ? p.Bereich : "Allgemein";
@@ -260,8 +262,6 @@
             const sectionCode = areaSortMap[bName].toString().padStart(2, '0');
             const bereichSection = document.createElement('section');
             bereichSection.className = `bereich-section cat-${sectionCode}`;
-            
-            // Aufbau mit neuem Content-Wrapper für das Padding
             bereichSection.innerHTML = `<h2 class="bereich-header">${bName}</h2><div class="bereich-content"></div>`;
             const contentWrapper = bereichSection.querySelector('.bereich-content');
 
@@ -276,20 +276,12 @@
                 groupedData[bName][aName].sort((x,y) => x.Name.localeCompare(y.Name)).forEach(p => {
                     const card = document.createElement('div');
                     card.className = `contact-card`;
-                    
                     const createRow = (icon, val, type) => {
                         if (!val || val === "-") return "";
                         const link = type === 'tel' ? `tel:${val.replace(/\s/g, '')}` : `mailto:${val}`;
                         return `<div class="contact-row"><span class="icon-container">${icon}</span><a href="${link}" class="contact-link">${val}</a></div>`;
                     };
-
-                    card.innerHTML = `
-                        <h4>${p.Name}</h4>
-                        <div class="job-position">${p.Position || ''}</div>
-                        ${createRow(ICON_PHONE, p.Telefon, 'tel')}
-                        ${createRow(ICON_MOBILE, p.Mobiltelefon, 'tel')}
-                        ${createRow(ICON_MAIL, p.Email, 'mail')}
-                    `;
+                    card.innerHTML = `<h4>${p.Name}</h4><div class="job-position">${p.Position || ''}</div>${createRow(ICON_PHONE, p.Telefon, 'tel')}${createRow(ICON_MOBILE, p.Mobiltelefon, 'tel')}${createRow(ICON_MAIL, p.Email, 'mail')}`;
                     grid.appendChild(card);
                 });
                 abtGroup.appendChild(grid);
