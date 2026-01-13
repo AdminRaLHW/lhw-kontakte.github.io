@@ -51,7 +51,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* --- PRINT ONLY ELEMENTS --- */
         .print-only { display: none; }
 
         /* --- HEADER --- */
@@ -88,37 +87,27 @@
             margin-bottom: 50px; border-radius: 16px;
             background-color: hsl(from var(--accent) h s l / var(--bg-opacity-area));
             border: 1px solid var(--border-ui); overflow: hidden;
-            /* Wichtig für Print-Farben */
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact;
         }
         
         .bereich-header { 
             font-size: 1.4rem; text-transform: uppercase; margin: 0; padding: 18px 25px; 
             background-color: var(--accent); color: #ffffff;
             letter-spacing: 0.08em; font-weight: 800;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact;
         }
 
         .bereich-content { padding: 25px; }
         .abteilung-group { margin-bottom: 35px; }
-        .abteilung-header {
-            font-size: 1.15rem; color: var(--text-main); margin: 0 0 15px 0;
-            display: flex; align-items: center; gap: 10px; font-weight: 700;
-        }
+        .abteilung-header { font-size: 1.15rem; color: var(--text-main); margin: 0 0 15px 0; font-weight: 700; }
 
-        .cards-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); gap: 20px; 
-        }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); gap: 20px; }
 
         .contact-card {
-            background-color: var(--card-bg);
-            border-left: 6px solid var(--accent);
+            background-color: var(--card-bg); border-left: 6px solid var(--accent);
             padding: 22px; border-radius: 12px; display: flex; flex-direction: column;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact;
         }
         
         .contact-card h4 { margin: 0 0 5px 0; font-size: 1.25rem; color: #000; }
@@ -137,89 +126,66 @@
         .cat-11 { --accent: var(--hex-11); } .cat-12 { --accent: var(--hex-12); }
         .cat-13 { --accent: var(--hex-13); }
 
-        .btn-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; }
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        .btn-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; }
 
         /* --- PRINT STYLES --- */
         @media print {
             .no-print, .update-hint { display: none !important; }
             .print-only { display: block; }
-            
             body { background: white !important; padding: 0; }
             
-            /* Print Header Styling */
-            .print-header-container {
-                display: flex; justify-content: space-between; align-items: flex-start;
-                border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px;
-            }
-            .print-title h1 { margin: 0; font-size: 24pt; text-transform: uppercase; }
-            .print-title p { margin: 5px 0 0 0; font-size: 10pt; color: #555; }
-            .print-logo { height: 60px; }
+            .print-cover { height: 98vh; display: flex; flex-direction: column; justify-content: center; break-after: page; padding: 50px; }
+            .cover-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid #000; padding-bottom: 20px; margin-bottom: 60px; }
+            .cover-header h1 { font-size: 38pt; margin: 0; text-transform: uppercase; font-weight: 900; }
+            .cover-logo { height: 80px; }
 
-            /* Legende */
-            .print-legend {
-                display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-                margin-bottom: 30px; padding: 15px; border: 1px solid #ccc; border-radius: 8px;
-            }
-            .legend-item { display: flex; align-items: center; gap: 8px; font-size: 9pt; font-weight: 600; }
-            .legend-color { width: 15px; height: 15px; border-radius: 3px; border: 1px solid #000; }
+            .toc-container { margin-top: 40px; }
+            .toc-title { font-size: 18pt; font-weight: bold; margin-bottom: 30px; border-bottom: 1px solid #000; padding-bottom: 10px; }
+            .toc-item { display: flex; align-items: center; margin-bottom: 12px; font-size: 12pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .toc-color-box { width: 25px; height: 25px; border-radius: 4px; margin-right: 15px; flex-shrink: 0; border: 1px solid #ddd; }
+            .toc-name { flex-grow: 0; font-weight: 600; }
+            .toc-dots { flex-grow: 1; border-bottom: 2px dotted #ccc; margin: 0 10px; position: relative; top: -4px; }
+            .toc-page { font-weight: bold; font-family: monospace; font-size: 13pt; }
 
-            /* Seitenumbrüche */
-            .bereich-section { 
-                break-before: page; 
-                margin-bottom: 30px !important; 
-                border: 1px solid #ccc !important;
-            }
-            .bereich-section:first-of-type { break-before: auto; }
-            
-            .abteilung-group { 
-                break-inside: avoid; 
-                page-break-inside: avoid;
-            }
-            
-            .contact-card {
-                break-inside: avoid;
-                border: 1px solid #eee !important;
-                border-left: 6px solid var(--accent) !important;
-                box-shadow: none !important;
-            }
-
-            .bereich-header { padding: 10px 20px !important; font-size: 1.2rem !important; }
+            .bereich-section { break-before: page; margin-bottom: 0 !important; border: 1px solid #eee !important; min-height: 100vh; }
+            .abteilung-group { break-inside: avoid; }
+            .contact-card { break-inside: avoid; border: 1px solid #eee !important; box-shadow: none !important; }
         }
     </style>
 </head>
 <body>
 
-<!-- Spezieller Header für den Ausdruck -->
+<!-- Titelseite & Legende für den Ausdruck -->
 <div class="print-only">
-    <div class="print-header-container">
-        <div class="print-title">
-            <h1>Kontaktverzeichnis</h1>
-            <p id="print-date">Datenstand: --</p>
+    <div class="print-cover">
+        <div class="cover-header">
+            <div>
+                <h1>Kontakt-<br>verzeichnis</h1>
+                <p id="print-date" style="font-size: 14pt; color: #666; margin-top: 10px;">Datenstand: --</p>
+            </div>
+            <img src="img/LHW Logo Trans.svg" alt="Logo" class="cover-logo">
         </div>
-        <img src="img/LHW Logo Trans.svg" alt="Logo" class="print-logo">
-    </div>
-    <div style="font-weight: bold; margin-bottom: 10px; font-size: 10pt;">Farbleitsystem / Bereiche:</div>
-    <div id="print-legend" class="print-legend">
-        <!-- Wird per JS gefüllt -->
+        <div class="toc-container">
+            <div class="toc-title">Farbleitsystem & Bereiche</div>
+            <div id="print-toc"></div>
+        </div>
     </div>
 </div>
 
 <header class="no-print">
     <div class="main-controls">
-        <a href="https://lebenshilfswerk-waren.de" class="logo-link" aria-label="Zur Startseite">
+        <a href="https://lebenshilfswerk-waren.de" class="logo-link">
             <img src="img/LHW Logo Trans.svg" alt="LHW Logo" class="logo">
         </a>
         <div class="search-wrapper">
-            <label for="search" class="sr-only">Suche</label>
-            <input type="text" id="search" onkeyup="handleSearch()" placeholder="Suchen nach Name, Bereich oder Abteilung..." aria-controls="directory">
+            <input type="text" id="search" onkeyup="handleSearch()" placeholder="Suchen nach Name, Bereich oder Abteilung...">
         </div>
     </div>
     <div class="action-controls">
         <button class="theme-btn" onclick="toggleTheme()" id="themeToggle">
             <svg id="sun-icon" class="btn-icon" style="display:none" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
             <svg id="moon-icon" class="btn-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-            <span id="theme-text">Dunkel</span>
+            <span id="theme-text" style="margin-left: 8px">Dunkel</span>
         </button>
         <button onclick="window.print()" class="print-btn">
             <svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-12 0v5h12v-5m-12-4h12"/></svg>
@@ -234,62 +200,42 @@
 <script>
     const CSV_PATH = "data/kontakte.csv";
 
+    const ICON_PHONE = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`;
+    const ICON_MOBILE = `<svg class="btn-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
+    const ICON_MAIL = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+
     async function fetchLastModified() {
         try {
             const response = await fetch(CSV_PATH, { method: 'HEAD' });
             const lastMod = response.headers.get("Last-Modified");
             if (lastMod) {
                 const date = new Date(lastMod);
-                const dateString = `Datenstand: ${date.toLocaleDateString('de-DE')}`;
-                document.getElementById('last-update').textContent = dateString;
-                document.getElementById('print-date').textContent = dateString;
+                const dateStr = `Datenstand: ${date.toLocaleDateString('de-DE')}`;
+                document.getElementById('last-update').textContent = dateStr;
+                document.getElementById('print-date').textContent = dateStr;
             }
-        } catch (e) { console.warn("Datum nicht verfügbar."); }
+        } catch (e) {}
     }
     fetchLastModified();
 
-    const ICON_PHONE = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`;
-    const ICON_MOBILE = `<svg class="btn-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
-    const ICON_MAIL = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
-
-    function toggleTheme() {
-        const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        applyTheme(theme);
-    }
-
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('dir-theme', theme);
         const isDark = theme === 'dark';
         document.getElementById('sun-icon').style.display = isDark ? 'block' : 'none';
         document.getElementById('moon-icon').style.display = isDark ? 'none' : 'block';
         document.getElementById('theme-text').textContent = isDark ? 'Hell' : 'Dunkel';
     }
     applyTheme(localStorage.getItem('dir-theme') || 'light');
+    function toggleTheme() {
+        const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        localStorage.setItem('dir-theme', newTheme);
+        applyTheme(newTheme);
+    }
 
     function handleSearch() {
-        const query = document.getElementById('search').value.toLowerCase();
-        document.querySelectorAll('.bereich-section').forEach(bereichSec => {
-            const bereichHeader = bereichSec.querySelector('.bereich-header').textContent.toLowerCase();
-            const bereichMatch = bereichHeader.includes(query);
-            let bereichHasVisibleContent = false;
-
-            bereichSec.querySelectorAll('.abteilung-group').forEach(abtGrp => {
-                const abtHeaderEl = abtGrp.querySelector('.abteilung-header');
-                const abtHeaderText = abtHeaderEl ? abtHeaderEl.textContent.toLowerCase() : "";
-                const abtMatch = abtHeaderText.includes(query);
-                let abtHasVisibleContent = false;
-
-                abtGrp.querySelectorAll('.contact-card').forEach(card => {
-                    const cardMatch = card.textContent.toLowerCase().includes(query);
-                    const isVisible = bereichMatch || abtMatch || cardMatch;
-                    card.style.display = isVisible ? "" : "none";
-                    if (isVisible) abtHasVisibleContent = true;
-                });
-                abtGrp.style.display = (abtMatch || abtHasVisibleContent) ? "" : "none";
-                if (abtMatch || abtHasVisibleContent) bereichHasVisibleContent = true;
-            });
-            bereichSec.style.display = (bereichMatch || bereichHasVisibleContent) ? "" : "none";
+        const q = document.getElementById('search').value.toLowerCase();
+        document.querySelectorAll('.bereich-section').forEach(sec => {
+            sec.style.display = sec.textContent.toLowerCase().includes(q) ? "" : "none";
         });
     }
 
@@ -300,16 +246,16 @@
 
     function render(data) {
         const root = document.getElementById('directory');
-        const legendRoot = document.getElementById('print-legend');
+        const tocRoot = document.getElementById('print-toc');
         root.innerHTML = "";
-        legendRoot.innerHTML = "";
+        tocRoot.innerHTML = "";
 
         const areaSortMap = {}; 
         const groupedData = data.reduce((acc, p) => {
-            const b = (p.Bereich && p.Bereich.trim() !== "") ? p.Bereich : "Allgemein";
-            const a = (p.Abteilung && p.Abteilung.trim() !== "") ? p.Abteilung : "_NO_DEPT_";
-            const currentCode = parseInt(p.ColorCode) || 99;
-            if (!areaSortMap[b] || currentCode < areaSortMap[b]) areaSortMap[b] = currentCode;
+            const b = p.Bereich?.trim() || "Allgemein";
+            const a = p.Abteilung?.trim() || "_NO_DEPT_";
+            const code = parseInt(p.ColorCode) || 99;
+            if (!areaSortMap[b] || code < areaSortMap[b]) areaSortMap[b] = code;
             if (!acc[b]) acc[b] = {};
             if (!acc[b][a]) acc[b][a] = [];
             acc[b][a].push(p);
@@ -318,44 +264,42 @@
 
         const sortedBereiche = Object.keys(groupedData).sort((a, b) => areaSortMap[a] - areaSortMap[b]);
 
-        sortedBereiche.forEach(bName => {
-            const codeNum = areaSortMap[bName];
-            const sectionCode = codeNum.toString().padStart(2, '0');
-            
-            // Legende für Print befüllen
-            const legItem = document.createElement('div');
-            legItem.className = 'legend-item';
-            legItem.innerHTML = `<div class="legend-color" style="background-color: var(--hex-${sectionCode})"></div><span>${bName}</span>`;
-            legendRoot.appendChild(legItem);
+        sortedBereiche.forEach((bName, index) => {
+            const sectionCode = areaSortMap[bName].toString().padStart(2, '0');
+            const pageNum = index + 2;
 
-            const bereichSection = document.createElement('section');
-            bereichSection.className = `bereich-section cat-${sectionCode}`;
-            bereichSection.innerHTML = `<h2 class="bereich-header">${bName}</h2><div class="bereich-content"></div>`;
-            const contentWrapper = bereichSection.querySelector('.bereich-content');
+            const tocItem = document.createElement('div');
+            tocItem.className = 'toc-item';
+            tocItem.innerHTML = `<div class="toc-color-box" style="background-color: var(--hex-${sectionCode})"></div><div class="toc-name">${bName}</div><div class="toc-dots"></div><div class="toc-page">S. ${pageNum}</div>`;
+            tocRoot.appendChild(tocItem);
 
-            const sortedAbteilungen = Object.keys(groupedData[bName]).sort();
-            sortedAbteilungen.forEach(aName => {
-                const abtGroup = document.createElement('div');
-                abtGroup.className = "abteilung-group";
-                if (aName !== "_NO_DEPT_") abtGroup.innerHTML = `<h3 class="abteilung-header">${aName}</h3>`;
+            const section = document.createElement('section');
+            section.className = `bereich-section cat-${sectionCode}`;
+            section.innerHTML = `<h2 class="bereich-header">${bName}</h2><div class="bereich-content"></div>`;
+            const content = section.querySelector('.bereich-content');
+
+            Object.keys(groupedData[bName]).sort().forEach(aName => {
+                const group = document.createElement('div');
+                group.className = "abteilung-group";
+                if (aName !== "_NO_DEPT_") group.innerHTML = `<h3 class="abteilung-header">${aName}</h3>`;
                 const grid = document.createElement('div');
                 grid.className = "cards-grid";
 
                 groupedData[bName][aName].sort((x,y) => x.Name.localeCompare(y.Name)).forEach(p => {
                     const card = document.createElement('div');
-                    card.className = `contact-card`;
-                    const createRow = (icon, val, type) => {
+                    card.className = "contact-card";
+                    const row = (icon, val, type) => {
                         if (!val || val === "-") return "";
                         const link = type === 'tel' ? `tel:${val.replace(/\s/g, '')}` : `mailto:${val}`;
                         return `<div class="contact-row"><span class="icon-container">${icon}</span><a href="${link}" class="contact-link">${val}</a></div>`;
                     };
-                    card.innerHTML = `<h4>${p.Name}</h4><div class="job-position">${p.Position || ''}</div>${createRow(ICON_PHONE, p.Telefon, 'tel')}${createRow(ICON_MOBILE, p.Mobiltelefon, 'tel')}${createRow(ICON_MAIL, p.Email, 'mail')}`;
+                    card.innerHTML = `<h4>${p.Name}</h4><div class="job-position">${p.Position || ''}</div>${row(ICON_PHONE, p.Telefon, 'tel')}${row(ICON_MOBILE, p.Mobiltelefon, 'tel')}${row(ICON_MAIL, p.Email, 'mail')}`;
                     grid.appendChild(card);
                 });
-                abtGroup.appendChild(grid);
-                contentWrapper.appendChild(abtGroup);
+                group.appendChild(grid);
+                content.appendChild(group);
             });
-            root.appendChild(bereichSection);
+            root.appendChild(section);
         });
     }
 </script>
