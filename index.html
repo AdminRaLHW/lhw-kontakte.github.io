@@ -113,8 +113,8 @@
         .contact-card h4 { margin: 0 0 5px 0; font-size: 1.25rem; color: #000; }
         .job-position { color: #555; font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; border-bottom: 1px solid #eeeeee; padding-bottom: 10px; }
         
-        .contact-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .icon-container { width: 18px; height: 18px; flex-shrink: 0; color: var(--accent); }
+        .contact-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+        .icon-container { width: 18px; height: 18px; flex-shrink: 0; color: var(--accent); margin-top: 2px; }
         .contact-link { text-decoration: none; color: #000; font-size: 0.95rem; }
 
         /* --- AKZENT-MAPPING --- */
@@ -130,57 +130,60 @@
 
         /* --- PRINT STYLES --- */
         @media print {
-            @page { margin: 15mm; }
+            @page { margin: 15mm; size: auto; }
             .no-print, .update-hint { display: none !important; }
             .print-only { display: block; }
-            body { background: white !important; padding: 0; }
+            body { background: white !important; padding: 0; margin: 0; }
             
-            /* Cover Design */
-            .print-cover { height: 95vh; display: flex; flex-direction: column; justify-content: center; break-after: page; padding: 50px; }
+            .print-cover { height: 98vh; display: flex; flex-direction: column; justify-content: center; break-after: page; padding: 50px; }
             .cover-header { display: flex; align-items: center; gap: 30px; border-bottom: 4px solid #000; padding-bottom: 25px; margin-bottom: 60px; }
             .cover-header h1 { font-size: 32pt; margin: 0; text-transform: uppercase; font-weight: 900; white-space: nowrap; }
             .cover-logo { height: 70px; width: auto; }
 
-            /* Inhaltsverzeichnis Reparatur */
             .toc-container { margin-top: 40px; }
             .toc-title { font-size: 18pt; font-weight: bold; margin-bottom: 30px; border-bottom: 1px solid #000; padding-bottom: 10px; }
-            .toc-item { display: flex; align-items: center; margin-bottom: 12px; font-size: 12pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .toc-color-box { width: 25px; height: 25px; border-radius: 4px; margin-right: 15px; flex-shrink: 0; border: 1px solid #ddd; }
+            .toc-item { display: flex; align-items: center; margin-bottom: 12px; font-size: 12pt; }
+            .toc-color-box { width: 25px; height: 25px; border-radius: 4px; margin-right: 15px; flex-shrink: 0; border: 1px solid #ddd; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .toc-name { flex-grow: 0; font-weight: 600; }
             .toc-dots { flex-grow: 1; border-bottom: 2px dotted #ccc; margin: 0 10px; position: relative; top: -4px; }
             .toc-page { font-weight: bold; font-family: monospace; font-size: 13pt; }
 
-            /* Bereiche & Hintergrund */
             .bereich-section { 
                 break-before: page; 
-                margin: 0 !important; 
+                margin: 0 0 30px 0 !important; 
                 border: none !important; 
                 border-radius: 0 !important;
-                min-height: 100vh; /* Zieht den Hintergrund so weit wie möglich */
                 background-color: hsl(from var(--accent) h s l / var(--bg-opacity-area)) !important;
-                -webkit-box-decoration-break: clone;
-                box-decoration-break: clone;
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                -webkit-box-decoration-break: clone; box-decoration-break: clone;
             }
             
             .bereich-content { padding: 10px 25px 40px 25px; }
 
-            /* Abteilungs-Padding für Folgeseiten */
             .abteilung-group { 
                 break-inside: avoid; 
                 page-break-inside: avoid; 
-                padding-top: 30px; /* Sicherer Abstand oben auf neuen Seiten */
+                padding-top: 25px; 
             }
 
             .contact-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #eee !important; box-shadow: none !important; }
 
-            /* Email niemals umbrechen */
-            .contact-link { white-space: nowrap !important; }
+            /* Hängender Einzug & Kontrollierter Umbruch */
+            .contact-link { 
+                display: block;
+                padding-left: 20px;
+                text-indent: -20px;
+                line-height: 1.2;
+                font-size: 0.9rem;
+                /* Browser-Standardumbruch erlauben, aber break-all verhindern */
+                word-break: normal; 
+                overflow-wrap: anywhere; 
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- Titelseite & Legende -->
 <div class="print-only">
     <div class="print-cover">
         <div class="cover-header">
@@ -316,7 +319,13 @@
                     const row = (icon, val, type) => {
                         if (!val || val === "-") return "";
                         const link = type === 'tel' ? `tel:${val.replace(/\s/g, '')}` : `mailto:${val}`;
-                        return `<div class="contact-row"><span class="icon-container">${icon}</span><a href="${link}" class="contact-link">${val}</a></div>`;
+                        
+                        // FIX: Bindestriche unbrechbar machen (\u2011) & nach dem @ ein Trennzeichen erlauben (\u200B)
+                        const displayVal = type === 'mail' 
+                            ? val.replace('@', '@\u200B').split('-').join('\u2011') 
+                            : val;
+
+                        return `<div class="contact-row"><span class="icon-container">${icon}</span><a href="${link}" class="contact-link">${displayVal}</a></div>`;
                     };
                     card.innerHTML = `<h4>${p.Name}</h4><div class="job-position">${p.Position || ''}</div>${row(ICON_PHONE, p.Telefon, 'tel')}${row(ICON_MOBILE, p.Mobiltelefon, 'tel')}${row(ICON_MAIL, p.Email, 'mail')}`;
                     grid.appendChild(card);
