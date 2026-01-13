@@ -15,15 +15,15 @@
             --text-main: #000000;
             --text-muted: #555555;
             --border-ui: #cccccc;
-            --bg-opacity-area: 0.1; /* Dezente Farbe im Hellen */
+            --bg-opacity-area: 0.1;
             
-            /* Card Settings (Immer Weiß) */
+            /* Card Settings */
             --card-bg: #ffffff;
             --card-text: #1a1a1a;
             --card-text-muted: #555555;
             --card-min-width: 350px;
 
-            /* Category HEX Colors (Bleiben als Akzente erhalten) */
+            /* Category HEX Colors */
             --hex-01: #81c784; --hex-02: #81c784; --hex-03: #ffa726;
             --hex-04: #ffa726; --hex-05: #4fc3f7; --hex-06: #1976d2;
             --hex-07: #1a237e; --hex-08: #00897b; --hex-09: #2e7d32;
@@ -33,15 +33,14 @@
         }
 
         [data-theme="dark"] {
-            /* UI MONOCHROM (Dark) */
-            --bg-body: #121212;
-            --bg-panel: #222222;
+            /* Erhöhter Kontrast im Dark Mode */
+            --bg-body: #0a0a0a;       /* Etwas dunklerer Hintergrund */
+            --bg-panel: #2a2a2a;      /* Etwas helleres Panel für Abhebung */
             --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --border-ui: #444444;
-            --bg-opacity-area: 0.25; /* Deutlichere Farbe im Dunkeln */
+            --text-muted: #bbbbbb;
+            --border-ui: #555555;      /* Deutlichere Linien */
+            --bg-opacity-area: 0.25;
             
-            /* Cards bleiben Weiß im Dark Mode */
             --card-bg: #ffffff;
             --card-text: #000000;
             --card-text-muted: #444444;
@@ -59,18 +58,27 @@
             display: flex; flex-wrap: wrap; gap: 20px; align-items: center; 
             padding: 15px 25px; background: var(--bg-panel); border-radius: 12px;
             margin-bottom: 8px; border: 1px solid var(--border-ui);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
+        
+        /* Spezifische Anpassung für Suchleiste im Dark Mode für besseren Kontrast */
+        [data-theme="dark"] input {
+            background: #1a1a1a;
+            border-color: #666666;
+        }
+
         .main-controls { display: flex; align-items: center; gap: 20px; flex: 1 1 500px; min-width: 0; }
         .logo { height: 45px; width: auto; filter: grayscale(1); transition: filter 0.3s; }
-        [data-theme="dark"] .logo { filter: grayscale(1) invert(1); } /* Logo Anpassung für Dark Mode */
+        [data-theme="dark"] .logo { filter: grayscale(1) invert(1); }
         .logo-link:hover .logo { filter: grayscale(0) invert(0); }
 
         .search-wrapper { flex-grow: 1; min-width: 150px; }
         input {
             width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-ui);
             background: var(--bg-body); color: var(--text-main); font-size: 1rem; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        input:focus { border-color: var(--text-main); }
+        input:focus { border-color: var(--text-main); box-shadow: 0 0 0 2px rgba(128,128,128,0.2); }
 
         .action-controls { display: flex; gap: 10px; flex: 1 0 auto; }
         .theme-btn, .print-btn {
@@ -98,16 +106,14 @@
         .abteilung-header {
             font-size: 1.15rem; color: var(--text-main); margin: 0 0 15px 0;
             display: flex; align-items: center; gap: 10px; font-weight: 700;
-        }
-        .abteilung-header::before {
-            content: ""; width: 4px; height: 18px; background: var(--accent); border-radius: 2px;
+            /* Indikator entfernt */
         }
 
         .cards-grid { 
             display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); gap: 20px; 
         }
 
-        /* --- KONTAKTKARTE (FIXIERT WEISS) --- */
+        /* --- KONTAKTKARTE --- */
         .contact-card {
             background-color: var(--card-bg);
             border-left: 6px solid var(--accent);
