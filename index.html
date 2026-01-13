@@ -294,25 +294,55 @@
             }
 
             /* INHALTS-SEITEN STYLING */
+            /* 1. Die gesamte Sektion bekommt den Hintergrund */
             .bereich-section {
                 page-break-before: always;
-                padding: 2cm;
-                background: transparent !important;
+                margin: 0 !important;
+                padding: 2cm !important;
+                min-height: 100vh; /* Sorgt dafür, dass die Farbe die ganze Seite füllt */
+                
+                /* Hintergrundfarbe erzwingen (die helle Variante) */
+                background-color: hsl(from var(--accent) h s l / var(--bg-opacity-area)) !important;
+                
+                /* Wichtig: Browser anweisen, Hintergründe zu drucken */
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
+
+            /* 2. Der Header bekommt den vollfarbigen Balken wie im Web */
             .bereich-header {
-                background: transparent !important;
-                color: var(--accent) !important;
-                padding: 0 0 10px 0 !important;
-                border-bottom: 4pt solid var(--accent) !important;
-                margin-bottom: 25px !important;
-                font-size: 22pt !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                background-color: var(--accent) !important;
+                color: white !important;
+                
+                /* Den Header bis an die Ränder der Sektion ziehen */
+                margin: -2cm -2cm 30px -2cm !important; 
+                padding: 15px 2cm !important;
+                font-size: 24pt !important;
+                text-transform: uppercase;
+                font-weight: 900;
+                
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+           
+            .abteilung-group { margin-bottom: 30px; break-inside: avoid; }
+            /* 3. Karten-Styling für bessere Lesbarkeit auf farbigem Grund */
+            .contact-card {
+                break-inside: avoid;
+                border: none !important;
+                background: white !important; /* Karten weiß lassen für Kontrast */
+                box-shadow: 0 2mm 5mm rgba(0,0,0,0.1) !important;
+                margin-bottom: 15px;
+                padding: 15px !important;
             }
 
-            .abteilung-group { margin-bottom: 30px; break-inside: avoid; }
-            .contact-card { break-inside: avoid; border: 1pt solid #ddd !important; background: #fff !important; margin-bottom: 10px; }
+            /* 4. Sicherstellen, dass die Grid-Struktur im Druck passt */
+            .cards-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important; /* 2 Spalten nutzen Platz besser */
+                gap: 15px !important;
+            }
             .contact-link { color: #000 !important; text-decoration: none; }
             .icon-container { color: var(--accent) !important; }
         } /* Hier schließt die Media Query korrekt */
