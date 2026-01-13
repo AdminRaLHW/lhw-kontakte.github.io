@@ -55,7 +55,6 @@
             border: 1px solid var(--border-ui);
         }
 
-        /* Logo & Suche Gruppe */
         .main-controls {
             display: flex;
             align-items: center;
@@ -79,7 +78,6 @@
         }
         input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px hsl(from var(--accent) h s l / 0.2); }
 
-        /* Button Gruppe */
         .action-controls { display: flex; gap: 10px; flex: 1 0 auto; }
 
         .theme-btn, .print-btn {
@@ -92,7 +90,6 @@
         .theme-btn:hover, .print-btn:hover { background: var(--bg-body); border-color: var(--text-muted); }
         .btn-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; }
 
-        /* Datumsanzeige Rechts */
         .update-hint {
             text-align: right; font-size: 0.75rem; color: var(--text-muted);
             margin-bottom: 30px; padding-right: 10px; font-style: italic;
@@ -140,7 +137,6 @@
         }
         .contact-link:hover, .contact-link:focus { color: var(--accent); text-decoration: underline; outline: none; }
 
-        /* Mapping Color Codes */
         .cat-01 { --accent: var(--hex-01); } .cat-02 { --accent: var(--hex-02); }
         .cat-03 { --accent: var(--hex-03); } .cat-04 { --accent: var(--hex-04); }
         .cat-05 { --accent: var(--hex-05); } .cat-06 { --accent: var(--hex-06); }
@@ -149,7 +145,6 @@
         .cat-11 { --accent: var(--hex-11); } .cat-12 { --accent: var(--hex-12); }
         .cat-13 { --accent: var(--hex-13); }
 
-        /* Helpers */
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
         @media print {
@@ -159,16 +154,13 @@
             .contact-card { background: white !important; border: 1px solid #ccc !important; border-left: 10px solid var(--accent) !important; break-inside: avoid; }
         }
 
-        @media (max-width: 768px) {
-            .main-controls, .action-controls { flex-basis: 100%; }
-        }
+        @media (max-width: 768px) { .main-controls, .action-controls { flex-basis: 100%; } }
     </style>
 </head>
 <body>
 
 <header class="no-print">
     <div class="main-controls">
-        <!-- Logo mit Link -->
         <a href="https://lebenshilfswerk-waren.de" class="logo-link" aria-label="Zur Startseite des Lebenshilfswerks Waren">
             <img src="img/LHW Logo Trans.svg" alt="LHW Logo" class="logo">
         </a>
@@ -191,7 +183,6 @@
     </div>
 </header>
 
-<!-- Datum Rechtsbündig unter Header -->
 <div id="last-update" class="update-hint" aria-hidden="true"></div>
 
 <main id="directory" aria-label="Kontaktverzeichnis"></main>
@@ -199,7 +190,6 @@
 <script>
     const CSV_PATH = "data/kontakte.csv";
 
-    /* --- DATUM AUS CSV-HEADER LADEN --- */
     async function fetchLastModified() {
         try {
             const response = await fetch(CSV_PATH, { method: 'HEAD' });
@@ -212,12 +202,10 @@
     }
     fetchLastModified();
 
-    /* --- ICONS --- */
     const ICON_PHONE = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`;
     const ICON_MOBILE = `<svg class="btn-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
     const ICON_MAIL = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
 
-    /* --- THEME LOGIK --- */
     function toggleTheme() {
         const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         applyTheme(theme);
@@ -233,31 +221,47 @@
     }
     applyTheme(localStorage.getItem('dir-theme') || 'light');
 
-    /* --- HIERARCHISCHE SUCHE --- */
+    /**
+     * ERWEITERTE SUCHE: Inkludiert Bereiche und Abteilungen
+     */
     function handleSearch() {
         const query = document.getElementById('search').value.toLowerCase();
         
         document.querySelectorAll('.bereich-section').forEach(bereichSec => {
-            let bereichHasVisibleContacts = false;
+            const bereichHeader = bereichSec.querySelector('.bereich-header').textContent.toLowerCase();
+            const bereichMatch = bereichHeader.includes(query);
+
+            let bereichHasVisibleContent = false;
 
             bereichSec.querySelectorAll('.abteilung-group').forEach(abtGrp => {
-                let abtHasVisibleContacts = false;
+                const abtHeaderEl = abtGrp.querySelector('.abteilung-header');
+                const abtHeaderText = abtHeaderEl ? abtHeaderEl.textContent.toLowerCase() : "";
+                const abtMatch = abtHeaderText.includes(query);
+
+                let abtHasVisibleContent = false;
 
                 abtGrp.querySelectorAll('.contact-card').forEach(card => {
-                    const match = card.textContent.toLowerCase().includes(query);
-                    card.style.display = match ? "" : "none";
-                    if (match) abtHasVisibleContacts = true;
+                    const cardText = card.textContent.toLowerCase();
+                    const cardMatch = cardText.includes(query);
+
+                    // Karte anzeigen wenn: Bereich matcht ODER Abteilung matcht ODER Karte selbst matcht
+                    const isVisible = bereichMatch || abtMatch || cardMatch;
+                    card.style.display = isVisible ? "" : "none";
+                    
+                    if (isVisible) abtHasVisibleContent = true;
                 });
 
-                abtGrp.style.display = abtHasVisibleContacts ? "" : "none";
-                if (abtHasVisibleContacts) bereichHasVisibleContacts = true;
+                // Abteilung anzeigen wenn Überschrift matcht ODER sichtbare Karten enthalten sind
+                const showAbt = abtMatch || abtHasVisibleContent;
+                abtGrp.style.display = showAbt ? "" : "none";
+                if (showAbt) bereichHasVisibleContent = true;
             });
 
-            bereichSec.style.display = bereichHasVisibleContacts ? "" : "none";
+            // Bereich anzeigen wenn Überschrift matcht ODER sichtbare Abteilungen enthalten sind
+            bereichSec.style.display = (bereichMatch || bereichHasVisibleContent) ? "" : "none";
         });
     }
 
-    /* --- DATEN LADEN & RENDERN --- */
     Papa.parse(CSV_PATH, {
         download: true, header: true, skipEmptyLines: true,
         complete: (results) => render(results.data)
@@ -267,77 +271,49 @@
         const root = document.getElementById('directory');
         root.innerHTML = "";
 
-        // 1. Gruppierung & Sortier-Map für ColorCodes erstellen
         const areaSortMap = {}; 
         const groupedData = data.reduce((acc, p) => {
             const b = (p.Bereich && p.Bereich.trim() !== "") ? p.Bereich : "Allgemein";
             const a = (p.Abteilung && p.Abteilung.trim() !== "") ? p.Abteilung : "_NO_DEPT_";
-            
-            // Kleinsten ColorCode für den Bereich finden
             const currentCode = parseInt(p.ColorCode) || 99;
-            if (!areaSortMap[b] || currentCode < areaSortMap[b]) {
-                areaSortMap[b] = currentCode;
-            }
-
+            if (!areaSortMap[b] || currentCode < areaSortMap[b]) areaSortMap[b] = currentCode;
             if (!acc[b]) acc[b] = {};
             if (!acc[b][a]) acc[b][a] = [];
             acc[b][a].push(p);
             return acc;
         }, {});
 
-        // 2. Bereiche nach ColorCode sortieren
         const sortedBereiche = Object.keys(groupedData).sort((a, b) => areaSortMap[a] - areaSortMap[b]);
 
-        // 3. HTML Struktur aufbauen
         sortedBereiche.forEach(bName => {
             const bereichSection = document.createElement('section');
             bereichSection.className = "bereich-section";
             bereichSection.innerHTML = `<h2 class="bereich-header">${bName}</h2>`;
 
-            // Abteilungen innerhalb alphabetisch
             const sortedAbteilungen = Object.keys(groupedData[bName]).sort();
 
             sortedAbteilungen.forEach(aName => {
                 const abtGroup = document.createElement('div');
                 abtGroup.className = "abteilung-group";
-                
-                if (aName !== "_NO_DEPT_") {
-                    abtGroup.innerHTML = `<h3 class="abteilung-header">${aName}</h3>`;
-                }
-
+                if (aName !== "_NO_DEPT_") abtGroup.innerHTML = `<h3 class="abteilung-header">${aName}</h3>`;
                 const grid = document.createElement('div');
                 grid.className = "cards-grid";
 
-                // Kontakte alphabetisch sortieren
                 groupedData[bName][aName].sort((x,y) => x.Name.localeCompare(y.Name)).forEach(p => {
                     const code = p.ColorCode ? p.ColorCode.toString().padStart(2, '0') : '01';
                     const card = document.createElement('div');
                     card.className = `contact-card cat-${code}`;
-                    
                     const createRow = (icon, val, type) => {
                         if (!val || val === "-") return "";
                         const link = type === 'tel' ? `tel:${val.replace(/\s/g, '')}` : `mailto:${val}`;
-                        return `
-                            <div class="contact-row">
-                                <span class="icon-container">${icon}</span>
-                                <a href="${link}" class="contact-link">${val}</a>
-                            </div>`;
+                        return `<div class="contact-row"><span class="icon-container">${icon}</span><a href="${link}" class="contact-link">${val}</a></div>`;
                     };
-
-                    card.innerHTML = `
-                        <h4>${p.Name}</h4>
-                        <div class="job-position">${p.Position || ''}</div>
-                        ${createRow(ICON_PHONE, p.Telefon, 'tel')}
-                        ${createRow(ICON_MOBILE, p.Mobiltelefon, 'tel')}
-                        ${createRow(ICON_MAIL, p.Email, 'mail')}
-                    `;
+                    card.innerHTML = `<h4>${p.Name}</h4><div class="job-position">${p.Position || ''}</div>${createRow(ICON_PHONE, p.Telefon, 'tel')}${createRow(ICON_MOBILE, p.Mobiltelefon, 'tel')}${createRow(ICON_MAIL, p.Email, 'mail')}`;
                     grid.appendChild(card);
                 });
-
                 abtGroup.appendChild(grid);
                 bereichSection.appendChild(abtGroup);
             });
-
             root.appendChild(bereichSection);
         });
     }
