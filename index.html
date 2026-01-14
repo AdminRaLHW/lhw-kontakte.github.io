@@ -134,6 +134,13 @@
 
         .bereich-content { padding: 25px; }
         .abteilung-group { margin-bottom: 35px; }
+        .abteilung-location {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: -10px 0 15px 0; /* Zieht es näher an den Header ran */
+            font-style: italic;
+            font-weight: 500;
+        }
         .abteilung-header { font-size: 1.15rem; color: var(--text-main); margin: 0 0 15px 0; font-weight: 700; }
 
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); gap: 20px; }
@@ -328,6 +335,10 @@
             }
            
             .abteilung-group { padding-top: 4dvh; break-inside: avoid; }
+            .abteilung-location {
+                color: #333 !important;
+                margin-bottom: 10px !important;
+            }
             /* 3. Karten-Styling für bessere Lesbarkeit auf farbigem Grund */
             .contact-card {
                 break-inside: avoid;
@@ -659,7 +670,23 @@
             Object.keys(groupedData[bName]).sort().forEach(aName => {
                 const group = document.createElement('div');
                 group.className = "abteilung-group";
-                if (aName !== "_NO_DEPT_") group.innerHTML = `<h3 class="abteilung-header">${aName}</h3>`;
+                
+                // Personen dieser Abteilung holen, um an den Standort zu kommen
+                const personArray = groupedData[bName][aName];
+                const standort = personArray[0].Standort?.trim() || "";
+
+                let headerContent = "";
+                if (aName !== "_NO_DEPT_") {
+                    headerContent += `<h3 class="abteilung-header">${aName}</h3>`;
+                }
+                
+                // Standort unter den Abteilungs-Header rendern, falls vorhanden
+                if (standort && standort !== "-") {
+                    headerContent += `<div class="abteilung-location">${standort}</div>`;
+                }
+                
+                group.innerHTML = headerContent;
+
                 const grid = document.createElement('div');
                 grid.className = "cards-grid";
 
