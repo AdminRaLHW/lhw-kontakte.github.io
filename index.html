@@ -141,6 +141,15 @@
             font-style: italic;
             font-weight: 500;
         }
+        .abteilung-fax {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: -10px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
         .abteilung-header { font-size: 1.15rem; color: var(--text-main); margin: 0 0 15px 0; font-weight: 700; }
 
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr)); gap: 20px; }
@@ -483,6 +492,9 @@
     const ICON_PHONE = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`;
     const ICON_MOBILE = `<svg class="btn-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`;
     const ICON_MAIL = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+    const ICON_FAX = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9l-7-7z"/><polyline points="13 2 13 9 20 9"/><line x1="6" y1="18" x2="18" y2="18"/><line x1="6" y1="14" x2="18" y2="14"/></svg>`;
+
+    /* --- FOOTER SETUP --- */
 
     function setupFooters() {
         // Erstellt die Namenslisten mit Umbrüchen zwischen JEDEM Namen
@@ -671,18 +683,25 @@
                 const group = document.createElement('div');
                 group.className = "abteilung-group";
                 
-                // Personen dieser Abteilung holen, um an den Standort zu kommen
                 const personArray = groupedData[bName][aName];
                 const standort = personArray[0].Standort?.trim() || "";
 
-                let headerContent = "";
-                if (aName !== "_NO_DEPT_") {
-                    headerContent += `<h3 class="abteilung-header">${aName}</h3>`;
+                // FAX LOGIK: Häufigkeit zählen
+                const faxList = personArray.map(p => p.Fax?.trim()).filter(f => f && f !== "-");
+                let commonFax = "";
+                if (faxList.length > 0) {
+                    const counts = faxList.reduce((acc, f) => { acc[f] = (acc[f] || 0) + 1; return acc; }, {});
+                    // Findet die Faxnummer, die am häufigsten vorkommt
+                    commonFax = Object.keys(counts).reduce((a, b) => counts[a] >= counts[b] ? a : b);
                 }
+
+                let headerContent = "";
+                if (aName !== "_NO_DEPT_") headerContent += `<h3 class="abteilung-header">${aName}</h3>`;
+                if (standort && standort !== "-") headerContent += `<div class="abteilung-location">${standort}</div>`;
                 
-                // Standort unter den Abteilungs-Header rendern, falls vorhanden
-                if (standort && standort !== "-") {
-                    headerContent += `<div class="abteilung-location">${standort}</div>`;
+                // Fax im Header anzeigen (wenn vorhanden)
+                if (commonFax) {
+                    headerContent += `<div class="abteilung-fax">${ICON_FAX} Fax: ${commonFax}</div>`;
                 }
                 
                 group.innerHTML = headerContent;
@@ -690,7 +709,7 @@
                 const grid = document.createElement('div');
                 grid.className = "cards-grid";
 
-                groupedData[bName][aName].sort((x,y) => x.Name.localeCompare(y.Name)).forEach(p => {
+                personArray.sort((x,y) => x.Name.localeCompare(y.Name)).forEach(p => {
                     const card = document.createElement('div');
                     card.className = "contact-card";
                     
@@ -701,13 +720,20 @@
                         return `<div class="contact-row"><span class="icon-container">${icon}</span><a href="${link}" class="contact-link">${displayVal}</a></div>`;
                     };
 
+                    // FAX IN DER CARD: Nur anzeigen, wenn sie von der Abteilungs-Fax abweicht
+                    const individualFax = p.Fax?.trim();
+                    const faxRow = (individualFax && individualFax !== "-" && individualFax !== commonFax) 
+                        ? row(ICON_FAX, individualFax, 'tel') 
+                        : "";
+
                     card.innerHTML = `
                         <h4>${p.Name}</h4>
                         <div class="job-position">${p.Position || ''}</div>
                         ${row(ICON_PHONE, p.Telefon, 'tel')}
                         ${row(ICON_MOBILE, p.Mobiltelefon, 'tel')}
                         ${row(ICON_MAIL, p.Email, 'mail')}
-                        ${row(ICON_MAIL, p.Email_alt, 'mail')}  <!-- Dies ist die neue Zeile für Email_alt -->
+                        ${row(ICON_MAIL, p.Email_alt, 'mail')}
+                        ${faxRow}
                     `;
                     
                     grid.appendChild(card);
